@@ -1,0 +1,3 @@
+rootProject.name = 'microservices'
+includeBuild 'bussiness-services'
+includeBuild 'customer-services'
