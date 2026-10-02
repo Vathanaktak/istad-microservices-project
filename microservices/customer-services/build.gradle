@@ -1,20 +1,16 @@
+
 plugins {
-    id 'java'
-}
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+    id 'spring-boot-common-conventions'
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+    // Core dependency for building web applications (includes Tomcat and Spring MVC)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-test {
-    useJUnitPlatform()
+    // Recommended: Production-ready features like health checks and monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Testing framework (Includes JUnit, Mockito, and Spring Test utilities)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
