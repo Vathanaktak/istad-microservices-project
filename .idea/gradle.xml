@@ -29,9 +29,16 @@
                   <project path="$PROJECT_DIR$/microservices/bussiness-services" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/microservices/customer-services" name="customer-services">
+              <build path="$PROJECT_DIR$/microservices/customer-services" name="customer-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/customer-services" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-domain" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-domain/customer-application-service" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-domain/customer-domain-core" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-main" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-message" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
+                  <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
                 </projects>
               </build>
             </builds>
@@ -48,6 +55,13 @@
             <option value="$PROJECT_DIR$/microservices" />
             <option value="$PROJECT_DIR$/microservices/bussiness-services" />
             <option value="$PROJECT_DIR$/microservices/customer-services" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-domain" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-domain/customer-application-service" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-domain/customer-domain-core" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-main" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-message" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
+            <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
           </set>
         </option>
         <option name="myGradleHome" value="" />
