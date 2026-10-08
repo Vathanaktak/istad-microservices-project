@@ -1,3 +1,5 @@
+
+
 package kh.edu.istad.platform.customer.restapi.controller;
 
 import jakarta.validation.Valid;
@@ -27,7 +29,7 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CustomerInitiateResponse initiateCustomer(
-            @RequestBody CustomerInitiateRequest customerInitiateRequest
+            @Valid @RequestBody CustomerInitiateRequest customerInitiateRequest
             ){
         InitiateCustomerResult result = initiateCustomerUseCase.execute(
                 customerWebMapper.toCommand(customerInitiateRequest)
@@ -36,21 +38,27 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}")
-    public CustomerUpdateInitiateResponse updateCustomer(@PathVariable UUID customerId,
-          @Valid @RequestBody CustomerUpdateInitiateRequest request
+    public CustomerUpdateInitiateResponse updateCustomer(
+            @PathVariable("customerId") UUID customerId,
+            @Valid @RequestBody CustomerUpdateInitiateRequest request
     ){
-
         return customerWebMapper.toUpdateResponse(
                 initiateUpdateCustomerUseCase.execute(customerWebMapper.toUpdateCommand(customerId, request))
         );
     }
 
-    @PatchMapping
-    public CustomerDeactivateInitiateResponse
-    deactivateInitiateResponse(
-            @PathVariable UUID customerId
+    @PatchMapping("/{customerId}")
+    public CustomerUpdateInitiateResponse patchCustomer(
+            @PathVariable("customerId") UUID customerId,
+            @Valid @RequestBody CustomerUpdateInitiateRequest request
     ){
+        return updateCustomer(customerId, request);
+    }
 
+    @PatchMapping("/{customerId}/deactivate")
+    public CustomerDeactivateInitiateResponse deactivateInitiateResponse(
+            @PathVariable("customerId") UUID customerId
+    ){
         return customerWebMapper.toDeactivateResponse(
                 initiateDeactivateCustomerUseCase.execute(new InitiateDeactivateCustomerCommand(customerId))
         );
