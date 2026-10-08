@@ -11,5 +11,6 @@ public record Money (
             System.out.println("Money is not greater than zero");
             throw new RuntimeException("Money is not greater than zero");
         }
+        System.out.println("Money is greater than zero");
     }
 }

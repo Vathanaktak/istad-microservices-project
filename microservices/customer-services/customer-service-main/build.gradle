@@ -4,13 +4,12 @@ plugins {
 }
 
 dependencies {
-    // Core dependency for building web applications (includes Tomcat and Spring MVC)
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'kh.edu.istad:customer-application-service'
+    implementation 'kh.edu.istad:customer-service-message'
+    implementation 'kh.edu.istad:customer-service-persistence'
+    implementation 'kh.edu.istad:customer-domain-core'
+    implementation 'kh.edu.istad:customer-service-restapi'
 
-    // Recommended: Production-ready features like health checks and monitoring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-    // Testing framework (Includes JUnit, Mockito, and Spring Test utilities)
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    runtimeOnly 'com.h2database:h2'
 }
