@@ -1,0 +1,16 @@
+
+plugins {
+    id 'spring-boot-common-conventions'
+}
+
+dependencies {
+    implementation 'kh.edu.istad:payment-application-service'
+    implementation 'kh.edu.istad:payment-service-message'
+    implementation 'kh.edu.istad:payment-service-persistence'
+    implementation 'kh.edu.istad:payment-domain-core'
+    implementation 'kh.edu.istad:payment-service-restapi'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+//    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+}

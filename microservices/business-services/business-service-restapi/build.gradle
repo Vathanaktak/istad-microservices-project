@@ -1,0 +1,7 @@
+plugins {
+    id 'sping-common-conventions'
+}
+
+dependencies {
+    api 'kh.edu.istad:business-application-service'
+}
