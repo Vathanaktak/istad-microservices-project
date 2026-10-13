@@ -1,0 +1,14 @@
+spring:
+  mongodb:
+    host: localhost
+    port: 2026
+    database: db_customer
+    username: mongod
+    password: mongod
+    authentication-database: admin
+    representation:
+      uuid: standard
+  data:
+    mongodb:
+      uuid-representation: standard
+

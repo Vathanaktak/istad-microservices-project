@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     api 'kh.edu.istad:business-domain-core'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }

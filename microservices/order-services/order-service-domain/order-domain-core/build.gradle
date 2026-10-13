@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
+    //this show how one module can call another module
     api 'kh.edu.istad:istad-common-domain'
+    api 'kh.edu.istad:business-domain-core'
 }
