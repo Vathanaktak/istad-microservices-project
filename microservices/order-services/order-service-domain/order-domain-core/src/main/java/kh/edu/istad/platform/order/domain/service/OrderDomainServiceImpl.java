@@ -10,7 +10,7 @@ public class OrderDomainServiceImpl implements OrderDomainService{
     @Override
     public OrderCreatedEvent validateAndInitiateOrder(Order order) {
         order.validateOrder();
-        order.initializeOrderItem();
+        order.initializeOrder();
         return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of("UTC")));
     }
 }

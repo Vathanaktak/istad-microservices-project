@@ -48,7 +48,7 @@
                   <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/microservices/order-services" name="customer-service">
+              <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-services" />
                   <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain" />

@@ -1,14 +1,9 @@
 spring:
   mongodb:
-    host: localhost
-    port: 2026
-    database: db_customer
-    username: mongod
-    password: mongod
-    authentication-database: admin
+    uri: mongodb://mongod:mongod@localhost:2026/db_customer?authSource=admin
     representation:
       uuid: standard
   data:
     mongodb:
-      uuid-representation: standard
-
+      representation:
+        uuid: standard

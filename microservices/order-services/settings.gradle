@@ -12,7 +12,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "order-service"
-rootProject.name = "customer-service"
 
 include 'order-service-main'
 include 'order-service-domain:order-domain-core'
