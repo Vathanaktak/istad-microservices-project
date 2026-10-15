@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:order-domain-core'
+    api 'kh.edu.istad:payment-domain-core'
 }
