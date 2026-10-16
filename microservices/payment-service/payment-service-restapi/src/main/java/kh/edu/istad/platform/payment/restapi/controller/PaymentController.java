@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -45,6 +46,17 @@ public class PaymentController {
         PaymentResult result = paymentUseCase.cancelPayment(command);
         return ResponseEntity.ok(toResponse(result));
 
+    }
+
+    @PostMapping("/credit")
+    public ResponseEntity<String> topUpCredit(
+            @RequestParam UUID customerId,
+            @RequestParam BigDecimal amount
+            ){
+        paymentUseCase.addCredit(customerId, amount);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                "Top Up Credit Successfully!"
+        );
     }
 
 

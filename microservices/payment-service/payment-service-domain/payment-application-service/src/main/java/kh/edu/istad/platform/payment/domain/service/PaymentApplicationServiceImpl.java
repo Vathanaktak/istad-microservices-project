@@ -15,12 +15,17 @@ import kh.edu.istad.platform.payment.domain.port.out.CreditEntryRepository;
 import kh.edu.istad.platform.payment.domain.port.out.CreditHistoryRepository;
 import kh.edu.istad.platform.payment.domain.port.out.PaymentRepository;
 import kh.edu.istad.platform.payment.domain.usecase.PaymentUseCase;
+import kh.edu.istad.platform.payment.domain.valueobject.CreditEntryId;
+import kh.edu.istad.platform.payment.domain.valueobject.CreditHistoryId;
+import kh.edu.istad.platform.payment.domain.valueobject.TransactionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -98,12 +103,39 @@ public class PaymentApplicationServiceImpl
         return toResult(paymentEvent.getPayment(),failureMessages);
     }
 
+    @Override
+    public void addCredit(UUID customerId, BigDecimal amount) {
+
+        CustomerId cusId = new CustomerId(customerId);
+        Money creditAmount = new Money(amount);
+        CreditEntry entry = creditEntryRepository.findByCustomerId(cusId)
+                .map(existing -> {
+                    existing.addCreditAmount(creditAmount);
+                    return existing;
+                })
+                .orElseGet(
+                        () -> new CreditEntry(
+                                new CreditEntryId(UUID.randomUUID()),
+                                cusId,
+                                creditAmount
+                        )
+                );
+        creditEntryRepository.save(entry);
+        CreditHistory creditHistory = new CreditHistory(
+                new CreditHistoryId(UUID.randomUUID()),
+                cusId,
+                creditAmount,
+                TransactionType.CREDIT
+        );
+        creditHistoryRepository.save(creditHistory);
+    }
+
     private CreditEntry getCreditEntry(CustomerId customerId){
 
         return creditEntryRepository.findByCustomerId(customerId)
                 .orElseThrow(
                         () -> new PaymentDomainException(
-                                "Cloud not find credit entry for customer: "+customerId.value()
+                                "Customer not found Entry. You need to Top Up Money first"
                         )
                 );
     }
