@@ -8,9 +8,10 @@ public record FindAllResult(
         String familyName,
         String givenName,
         String email,
-        String phoneNumber
+        String phoneNumber,
+        String customerSegment
 ) {
-    public FindAllResult(String username, String familyName, String givenName, String email, String phoneNumber) {
-        this(null, username, familyName, givenName, email, phoneNumber);
+    public FindAllResult(UUID customerId, String username, String familyName, String givenName, String email, String phoneNumber) {
+        this(customerId, username, familyName, givenName, email, phoneNumber, null);
     }
 }

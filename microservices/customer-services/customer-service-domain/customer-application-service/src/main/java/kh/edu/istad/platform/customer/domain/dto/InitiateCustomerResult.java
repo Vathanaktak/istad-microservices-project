@@ -8,6 +8,10 @@ public record InitiateCustomerResult(
         String familyName,
         String givenName,
         String email,
-        String phoneNumber
+        String phoneNumber,
+        String customerSegment
 ) {
+    public InitiateCustomerResult(UUID customerId, String username, String familyName, String givenName, String email, String phoneNumber) {
+        this(customerId, username, familyName, givenName, email, phoneNumber, null);
+    }
 }

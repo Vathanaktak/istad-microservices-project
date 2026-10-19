@@ -2,8 +2,10 @@ package kh.edu.istad.platform.customer.persistence.mapper;
 
 import kh.edu.istad.common.valueobject.CustomerId;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
+import kh.edu.istad.platform.customer.domain.valueObject.CustomerSegment;
 import kh.edu.istad.platform.customer.domain.valueObject.PhoneNumber;
 import kh.edu.istad.platform.customer.persistence.document.CustomerDocument;
+import kh.edu.istad.platform.customer.persistence.document.CustomerSegmentDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -35,5 +37,19 @@ public interface CustomerPersistenceMapper {
 
     default PhoneNumber mapStringToPhoneNumber(String phoneNumber) {
         return phoneNumber != null ? new PhoneNumber(phoneNumber) : null;
+    }
+
+    default CustomerSegmentDocument mapSegmentToDocument(CustomerSegment segment) {
+        if (segment == null) {
+            return null;
+        }
+        return new CustomerSegmentDocument(segment.id(), segment.name(), segment.description());
+    }
+
+    default CustomerSegment mapDocumentToSegment(CustomerSegmentDocument document) {
+        if (document == null) {
+            return null;
+        }
+        return new CustomerSegment(document.getId(), document.getName(), document.getDescription());
     }
 }

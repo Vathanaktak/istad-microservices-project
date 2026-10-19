@@ -5,27 +5,11 @@ import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
 import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
 import kh.edu.istad.platform.customer.domain.service.CustomerDomainService;
+import kh.edu.istad.platform.customer.domain.valueObject.CustomerSegment;
 import kh.edu.istad.platform.customer.domain.valueObject.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
-
-//@Slf4j
-//@RequiredArgsConstructor
-//@Component
-//public class InitiateCustomerUseCase {
-//    @Autowired
-//    private final CustomerDomainService customerDomainService;
-//
-//    public InitiateCustomerResult execute(InitiateCustomerCommand command) {
-//        log.info("initiate customer use case {}", command);
-////        return new
-//        return new InitiateCustomerResult(UUID.randomUUID());
-//    }
-//}
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,15 +22,20 @@ public class InitiateCustomerUseCase {
     public InitiateCustomerResult execute(InitiateCustomerCommand command) {
         log.info("initiate customer use case {}", command);
 
+        CustomerSegment segment = command.customerSegment() != null && !command.customerSegment().isBlank()
+                ? CustomerSegment.fromName(command.customerSegment())
+                : CustomerSegment.SILVER;
+
         Customer customer = Customer.Builder.builder()
                 .username(command.username())
                 .familyName(command.familyName())
                 .givenName(command.givenName())
                 .email(command.email())
                 .phoneNumber(new PhoneNumber(command.phoneNumber()))
+                .customerSegment(segment)
                 .build();
 
-        customerDomainService.initialCustomer(customer); // sets UUID + ACTIVE
+        customerDomainService.initialCustomer(customer); // sets UUID + ACTIVE, defaults segment to SILVER if null
         Customer saved = customerRepository.save(customer);
 
         return new InitiateCustomerResult(
@@ -55,7 +44,8 @@ public class InitiateCustomerUseCase {
                 saved.getFamilyName(),
                 saved.getGivenName(),
                 saved.getEmail(),
-                saved.getPhoneNumber() != null ? saved.getPhoneNumber().value() : null
+                saved.getPhoneNumber() != null ? saved.getPhoneNumber().value() : null,
+                saved.getCustomerSegment() != null ? saved.getCustomerSegment().name() : null
         );
     }
 }

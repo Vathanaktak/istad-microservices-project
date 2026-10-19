@@ -12,6 +12,10 @@ public record CustomerInitiateRequest(
         @NotBlank
         String email,
         @NotBlank
-        String phoneNumber
+        String phoneNumber,
+        String customerSegment
 ) {
+    public CustomerInitiateRequest(String username, String familyName, String givenName, String email, String phoneNumber) {
+        this(username, familyName, givenName, email, phoneNumber, null);
+    }
 }

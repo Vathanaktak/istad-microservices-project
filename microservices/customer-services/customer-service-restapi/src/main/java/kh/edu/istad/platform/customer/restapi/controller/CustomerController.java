@@ -5,10 +5,13 @@ import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.FindAllResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
+import kh.edu.istad.platform.customer.domain.usecase.CustomerStatusReportUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateDeactivateCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateFindAllUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateUpdateCustomerUseCase;
+import kh.edu.istad.platform.customer.domain.valueObject.CustomerFilterCriteria;
+import kh.edu.istad.platform.customer.domain.valueObject.CustomerStatus;
 import kh.edu.istad.platform.customer.restapi.dto.*;
 import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/customers")
+@RequestMapping({"/api/v1/customers", "/customers"})
 public class CustomerController {
 
     private final InitiateCustomerUseCase initiateCustomerUseCase;
@@ -28,6 +31,7 @@ public class CustomerController {
     private final InitiateUpdateCustomerUseCase initiateUpdateCustomerUseCase;
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
     private final InitiateFindAllUseCase findAllUseCase;
+    private final CustomerStatusReportUseCase customerStatusReportUseCase;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -68,7 +72,36 @@ public class CustomerController {
     }
 
     @GetMapping
-   public List<FindAllResult> findAll(){
-        return findAllUseCase.findAll();
+    public List<FindAllResult> findAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) CustomerStatus status,
+            @RequestParam(required = false) String customerSegment
+    ) {
+        CustomerFilterCriteria criteria = new CustomerFilterCriteria(
+                name,
+                email,
+                phoneNumber,
+                status != null ? status.name() : null,
+                customerSegment
+        );
+        return findAllUseCase.findAll(criteria);
+    }
+
+    public List<FindAllResult> findAll(
+            String name,
+            String email,
+            String phoneNumber,
+            CustomerStatus status
+    ) {
+        return findAll(name, email, phoneNumber, status, null);
+    }
+
+    @GetMapping("/report")
+    public List<CustomerStatusReportResponse> getCustomerStatusReport() {
+        return customerStatusReportUseCase.execute().stream()
+                .map(r -> new CustomerStatusReportResponse(r.status(), r.total()))
+                .toList();
     }
 }

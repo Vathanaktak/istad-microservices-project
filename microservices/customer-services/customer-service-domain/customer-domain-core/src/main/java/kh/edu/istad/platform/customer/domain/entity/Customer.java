@@ -3,6 +3,7 @@ package kh.edu.istad.platform.customer.domain.entity;
 import kh.edu.istad.common.entity.AggregateRoot;
 import kh.edu.istad.common.valueobject.CustomerId;
 import kh.edu.istad.platform.customer.domain.exception.CustomerDomainException;
+import kh.edu.istad.platform.customer.domain.valueObject.CustomerSegment;
 import kh.edu.istad.platform.customer.domain.valueObject.CustomerStatus;
 import kh.edu.istad.platform.customer.domain.valueObject.PhoneNumber;
 
@@ -15,6 +16,7 @@ public class Customer extends AggregateRoot<CustomerId> {
     private final String email;
     private final PhoneNumber phoneNumber;
     private CustomerStatus status;
+    private CustomerSegment customerSegment;
 
     //Domain Critical Logic
 
@@ -23,6 +25,9 @@ public class Customer extends AggregateRoot<CustomerId> {
 
         super.setId(new CustomerId(UUID.randomUUID()));
         status = CustomerStatus.ACTIVE;
+        if (customerSegment == null) {
+            customerSegment = CustomerSegment.SILVER;
+        }
     }
 
     private void validateCustomer(){
@@ -47,6 +52,13 @@ public class Customer extends AggregateRoot<CustomerId> {
         status = CustomerStatus.INACTIVE;
     }
 
+    public void updateCustomerSegment(CustomerSegment customerSegment){
+        if(customerSegment == null){
+            throw new CustomerDomainException("Customer segment must not be null");
+        }
+        this.customerSegment = customerSegment;
+    }
+
     private Customer(Builder builder) {
         super.setId(builder.id);
         username = builder.username;
@@ -55,6 +67,7 @@ public class Customer extends AggregateRoot<CustomerId> {
         email = builder.email;
         phoneNumber = builder.phoneNumber;
         status = builder.status;
+        customerSegment = builder.customerSegment;
     }
 
     public String getUsername() {
@@ -81,6 +94,10 @@ public class Customer extends AggregateRoot<CustomerId> {
         return status;
     }
 
+    public CustomerSegment getCustomerSegment() {
+        return customerSegment;
+    }
+
     public static Builder builder() {
         return Builder.builder();
     }
@@ -93,6 +110,7 @@ public class Customer extends AggregateRoot<CustomerId> {
         private String email;
         private PhoneNumber phoneNumber;
         private CustomerStatus status;
+        private CustomerSegment customerSegment;
 
         private Builder() {
         }
@@ -133,6 +151,11 @@ public class Customer extends AggregateRoot<CustomerId> {
 
         public Builder status(CustomerStatus val) {
             status = val;
+            return this;
+        }
+
+        public Builder customerSegment(CustomerSegment val) {
+            customerSegment = val;
             return this;
         }
 
