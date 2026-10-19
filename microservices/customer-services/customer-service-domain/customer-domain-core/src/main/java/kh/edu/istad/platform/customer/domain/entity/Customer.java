@@ -81,6 +81,10 @@ public class Customer extends AggregateRoot<CustomerId> {
         return status;
     }
 
+    public static Builder builder() {
+        return Builder.builder();
+    }
+
     public static final class Builder {
         private CustomerId id;
         private String username;

@@ -15,6 +15,9 @@ class CustomerApplicationTests {
     @Autowired
     private InitiateCustomerUseCase initiateCustomerUseCase;
 
+    @Autowired
+    private kh.edu.istad.platform.customer.domain.usecase.InitiateFindAllUseCase initiateFindAllUseCase;
+
     @Test
     void testInitiateCustomer() {
         InitiateCustomerCommand command = new InitiateCustomerCommand(
@@ -29,6 +32,14 @@ class CustomerApplicationTests {
         assertNotNull(result);
         assertNotNull(result.customerId());
         System.out.println("Customer created successfully with ID: " + result.customerId());
+    }
+
+    @Test
+    void testFindAll() {
+        var results = initiateFindAllUseCase.findAll();
+        assertNotNull(results);
+        System.out.println("FindAll count: " + results.size());
+        results.forEach(r -> System.out.println("Customer: " + r));
     }
 
 }

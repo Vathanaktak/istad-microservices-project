@@ -3,6 +3,10 @@ plugins {
     id 'spring-boot-common-conventions'
 }
 
+bootJar {
+    enabled = false
+}
+
 dependencies {
     // Core dependency for building web applications (includes Tomcat and Spring MVC)
     implementation 'org.springframework.boot:spring-boot-starter-web'

@@ -1,11 +1,11 @@
 server:
   port: 9091
+
 spring:
   mongodb:
     uri: mongodb://mongod:mongod@localhost:2026/db_customer?authSource=admin
-    representation:
-      uuid: standard
   data:
     mongodb:
-      representation:
-        uuid: standard
+      uri: mongodb://mongod:mongod@localhost:2026/db_customer?authSource=admin
+      uuid-representation: standard
+      auto-index-creation: true

@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
     api 'kh.edu.istad:customer-domain-core'
+
+    testImplementation 'io.projectreactor:reactor-test'
 }

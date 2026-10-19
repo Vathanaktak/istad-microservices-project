@@ -49,6 +49,13 @@ public class InitiateCustomerUseCase {
         customerDomainService.initialCustomer(customer); // sets UUID + ACTIVE
         Customer saved = customerRepository.save(customer);
 
-        return new InitiateCustomerResult(saved.getId().value());
+        return new InitiateCustomerResult(
+                saved.getId().value(),
+                saved.getUsername(),
+                saved.getFamilyName(),
+                saved.getGivenName(),
+                saved.getEmail(),
+                saved.getPhoneNumber() != null ? saved.getPhoneNumber().value() : null
+        );
     }
 }

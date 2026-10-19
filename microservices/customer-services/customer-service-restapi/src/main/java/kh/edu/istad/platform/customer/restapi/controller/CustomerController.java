@@ -2,10 +2,12 @@
 
 package kh.edu.istad.platform.customer.restapi.controller;
 import jakarta.validation.Valid;
+import kh.edu.istad.platform.customer.domain.dto.FindAllResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateDeactivateCustomerUseCase;
+import kh.edu.istad.platform.customer.domain.usecase.InitiateFindAllUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateUpdateCustomerUseCase;
 import kh.edu.istad.platform.customer.restapi.dto.*;
 import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,6 +27,7 @@ public class CustomerController {
     private final CustomerWebMapper customerWebMapper;
     private final InitiateUpdateCustomerUseCase initiateUpdateCustomerUseCase;
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
+    private final InitiateFindAllUseCase findAllUseCase;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -61,5 +65,10 @@ public class CustomerController {
         return customerWebMapper.toDeactivateResponse(
                 initiateDeactivateCustomerUseCase.execute(new InitiateDeactivateCustomerCommand(customerId))
         );
+    }
+
+    @GetMapping
+   public List<FindAllResult> findAll(){
+        return findAllUseCase.findAll();
     }
 }
