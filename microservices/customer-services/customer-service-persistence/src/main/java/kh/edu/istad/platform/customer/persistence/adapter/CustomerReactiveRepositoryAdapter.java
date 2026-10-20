@@ -1,6 +1,7 @@
 package kh.edu.istad.platform.customer.persistence.adapter;
 
 import kh.edu.istad.common.valueobject.CustomerId;
+import kh.edu.istad.common.valueobject.Money;
 import kh.edu.istad.platform.customer.domain.dto.CustomerStatusReportResult;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
 import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -195,5 +197,11 @@ public class CustomerReactiveRepositoryAdapter implements CustomerRepository {
         return countMap.entrySet().stream()
                 .map(entry -> new CustomerStatusReportResult(entry.getKey(), entry.getValue()))
                 .toList();
+    }
+
+    @Override
+    public Boolean deleteCustomerById(String id) {
+        Mono<Void> document = customerMongoRepository.deleteById(id);
+        return true;
     }
 }

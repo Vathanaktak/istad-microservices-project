@@ -9,6 +9,7 @@ import kh.edu.istad.platform.business.persistence.entity.BusinessDocument;
 import kh.edu.istad.platform.business.persistence.repository.ReactiveMongoBusinessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -36,6 +37,15 @@ public class BusinessRepositoryAdapter implements BusinessRepository {
     @Override
     public Mono<Boolean> existsByLegalName(String legalName) {
         return businessRepository.existsByLegalName(legalName);
+    }
+
+    @Override
+    public Flux<Business> findAll() {
+
+        Flux<Business> businessFlux = businessRepository
+                .findAll()
+                .map(this::toDomain);
+        return businessFlux;
     }
 
     private Business toDomain(BusinessDocument doc){

@@ -14,4 +14,5 @@ public interface CustomerRepository {
     List<Customer> findAll();
     List<Customer> filter(CustomerFilterCriteria criteria);
     List<CustomerStatusReportResult> getCustomerStatusReport();
+    Boolean deleteCustomerById(String id);
 }

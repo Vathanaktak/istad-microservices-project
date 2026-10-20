@@ -5,11 +5,7 @@ import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.FindAllResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
-import kh.edu.istad.platform.customer.domain.usecase.CustomerStatusReportUseCase;
-import kh.edu.istad.platform.customer.domain.usecase.InitiateCustomerUseCase;
-import kh.edu.istad.platform.customer.domain.usecase.InitiateDeactivateCustomerUseCase;
-import kh.edu.istad.platform.customer.domain.usecase.InitiateFindAllUseCase;
-import kh.edu.istad.platform.customer.domain.usecase.InitiateUpdateCustomerUseCase;
+import kh.edu.istad.platform.customer.domain.usecase.*;
 import kh.edu.istad.platform.customer.domain.valueObject.CustomerFilterCriteria;
 import kh.edu.istad.platform.customer.domain.valueObject.CustomerStatus;
 import kh.edu.istad.platform.customer.restapi.dto.*;
@@ -32,6 +28,7 @@ public class CustomerController {
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
     private final InitiateFindAllUseCase findAllUseCase;
     private final CustomerStatusReportUseCase customerStatusReportUseCase;
+    private final InitiateDeleteCustomerUseCase deleteCustomerUseCase;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -103,5 +100,9 @@ public class CustomerController {
         return customerStatusReportUseCase.execute().stream()
                 .map(r -> new CustomerStatusReportResponse(r.status(), r.total()))
                 .toList();
+    }
+    @DeleteMapping("/{id}")
+    public Boolean deleteCustomerById(@PathVariable String id){
+        return deleteCustomerUseCase.deleteCustomerById(id);
     }
 }

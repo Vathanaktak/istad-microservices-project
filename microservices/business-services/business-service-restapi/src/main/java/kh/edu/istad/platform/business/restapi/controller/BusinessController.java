@@ -3,11 +3,14 @@ package kh.edu.istad.platform.business.restapi.controller;
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.business.domain.dto.InitiateBusinessCommand;
 import kh.edu.istad.platform.business.domain.usecase.InitiateBusinessUseCase;
+import kh.edu.istad.platform.business.domain.usecase.InitiateGetAllBusinessUseCase;
 import kh.edu.istad.platform.business.restapi.dto.BusinessCreateRequest;
 import kh.edu.istad.platform.business.restapi.dto.BusinessCreateResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -16,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class BusinessController {
 
     private final InitiateBusinessUseCase businessUseCase;
+    private final InitiateGetAllBusinessUseCase getAllBusinessUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,6 +38,19 @@ public class BusinessController {
                         result.active(),
                         result.message()
                 ));
+    }
+    @GetMapping
+    public Flux<BusinessCreateResponse> findAll(){
+
+        return getAllBusinessUseCase.findAll()
+                .map(bus -> {
+                    return new BusinessCreateResponse(
+                            bus.businessId(),
+                            bus.displayName(),
+                            bus.active(),
+                            "Get All Business"
+                    );
+                });
     }
 
 

@@ -7,19 +7,21 @@ import kh.edu.istad.platform.business.domain.entity.Business;
 import kh.edu.istad.platform.business.domain.event.BusinessRegisteredEvent;
 import kh.edu.istad.platform.business.domain.port.out.BusinessRepository;
 import kh.edu.istad.platform.business.domain.usecase.InitiateBusinessUseCase;
+import kh.edu.istad.platform.business.domain.usecase.InitiateGetAllBusinessUseCase;
 import kh.edu.istad.platform.business.domain.valueobject.BusinessContact;
 import kh.edu.istad.platform.business.domain.valueobject.BusinessName;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Builder
-public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase {
+public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase, InitiateGetAllBusinessUseCase {
 
     private final BusinessDomainService businessDomainService;
     private final BusinessRepository businessRepository;
@@ -49,5 +51,19 @@ public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase {
                                     "Business created successfully"
                             ));
                 });
+    }
+
+    @Override
+    public Flux<InitiateBusinessResult> findAll() {
+        return businessRepository.findAll()
+                .map(
+                        bus -> new InitiateBusinessResult(
+                                bus.getId().value(),
+                                bus.getBusinessName().displayName(),
+                                bus.isActive(),
+                                "Get All Business Successfuly"
+
+                        )
+                );
     }
 }
