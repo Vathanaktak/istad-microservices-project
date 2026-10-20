@@ -48,6 +48,12 @@
                   <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservices/order-service-learning" name="order-service-learning">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning" />
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-main" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-services" />
@@ -100,6 +106,8 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-message" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-main" />
             <option value="$PROJECT_DIR$/microservices/order-services" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-application-service" />
