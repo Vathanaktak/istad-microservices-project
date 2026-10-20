@@ -7,10 +7,10 @@ import kh.edu.istad.platform.customer.domain.entity.Customer;
 import kh.edu.istad.platform.customer.domain.event.CustomerUpdateEvent;
 import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
 import kh.edu.istad.platform.customer.domain.service.CustomerDomainService;
-import kh.edu.istad.platform.customer.domain.valueObject.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Component
@@ -19,19 +19,20 @@ public class InitiateUpdateCustomerUseCase {
     private final CustomerDomainService customerDomainService;
     private final CustomerRepository customerRepository;
 
-    public InitiateUpdateCustomerResult execute(InitiateUpdateCustomerCommand command) {
+    public Mono<InitiateUpdateCustomerResult> execute(InitiateUpdateCustomerCommand command) {
         log.info("Initiate update customer use case {}", command);
-        // Implement the logic to initiate the update customer process
-        // For example, you can call the customerDomainService to perform the update
-        // and return the result as InitiateUpdateCustomerResult
 
-        Customer customer= customerRepository.findById(new CustomerId(command.customerId()))
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + command.customerId()));
-
-        CustomerUpdateEvent event = customerDomainService.updateCustomer(customer,command.familyName(),command.givenName());
-        customerRepository.save(customer);
-        return new InitiateUpdateCustomerResult(command.customerId(),command.familyName()
-        ,command.givenName(),event.getUpdatedAt());
+        return customerRepository.findById(new CustomerId(command.customerId()))
+                .switchIfEmpty(Mono.error(new RuntimeException("Customer not found with id: " + command.customerId())))
+                .flatMap(customer -> {
+                    CustomerUpdateEvent event = customerDomainService.updateCustomer(customer, command.familyName(), command.givenName());
+                    return customerRepository.save(customer)
+                            .map(saved -> new InitiateUpdateCustomerResult(
+                                    command.customerId(),
+                                    command.familyName(),
+                                    command.givenName(),
+                                    event.getUpdatedAt()
+                            ));
+                });
     }
 }
-

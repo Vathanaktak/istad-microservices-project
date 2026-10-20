@@ -1,9 +1,7 @@
-
-
 package kh.edu.istad.platform.customer.restapi.controller;
+
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.FindAllResult;
-import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
 import kh.edu.istad.platform.customer.domain.usecase.*;
 import kh.edu.istad.platform.customer.domain.valueObject.CustomerFilterCriteria;
@@ -13,13 +11,14 @@ import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping({"/api/v1/customers", "/customers"})
+@RequestMapping({"/api/customers", "/customers"})
 public class CustomerController {
 
     private final InitiateCustomerUseCase initiateCustomerUseCase;
@@ -27,32 +26,31 @@ public class CustomerController {
     private final InitiateUpdateCustomerUseCase initiateUpdateCustomerUseCase;
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
     private final InitiateFindAllUseCase findAllUseCase;
-    private final CustomerStatusReportUseCase customerStatusReportUseCase;
     private final InitiateDeleteCustomerUseCase deleteCustomerUseCase;
+    private final InitiateChangeCustomerSegmentUseCase initiateChangeCustomerSegmentUseCase;
+    private final CustomerStatisticsUseCase customerStatisticsUseCase;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CustomerInitiateResponse initiateCustomer(
+    public Mono<CustomerInitiateResponse> initiateCustomer(
             @Valid @RequestBody CustomerInitiateRequest customerInitiateRequest
-            ){
-        InitiateCustomerResult result = initiateCustomerUseCase.execute(
+    ){
+        return initiateCustomerUseCase.execute(
                 customerWebMapper.toCommand(customerInitiateRequest)
-        );
-        return customerWebMapper.toResponse(result);
+        ).map(customerWebMapper::toResponse);
     }
 
     @PutMapping("/{customerId}")
-    public CustomerUpdateInitiateResponse updateCustomer(
+    public Mono<CustomerUpdateInitiateResponse> updateCustomer(
             @PathVariable("customerId") UUID customerId,
             @Valid @RequestBody CustomerUpdateInitiateRequest request
     ){
-        return customerWebMapper.toUpdateResponse(
-                initiateUpdateCustomerUseCase.execute(customerWebMapper.toUpdateCommand(customerId, request))
-        );
+        return initiateUpdateCustomerUseCase.execute(customerWebMapper.toUpdateCommand(customerId, request))
+                .map(customerWebMapper::toUpdateResponse);
     }
 
     @PatchMapping("/{customerId}")
-    public CustomerUpdateInitiateResponse patchCustomer(
+    public Mono<CustomerUpdateInitiateResponse> patchCustomer(
             @PathVariable("customerId") UUID customerId,
             @Valid @RequestBody CustomerUpdateInitiateRequest request
     ){
@@ -60,16 +58,25 @@ public class CustomerController {
     }
 
     @PatchMapping("/{customerId}/deactivate")
-    public CustomerDeactivateInitiateResponse deactivateInitiateResponse(
+    public Mono<CustomerDeactivateInitiateResponse> deactivateInitiateResponse(
             @PathVariable("customerId") UUID customerId
     ){
-        return customerWebMapper.toDeactivateResponse(
-                initiateDeactivateCustomerUseCase.execute(new InitiateDeactivateCustomerCommand(customerId))
-        );
+        return initiateDeactivateCustomerUseCase.execute(new InitiateDeactivateCustomerCommand(customerId))
+                .map(customerWebMapper::toDeactivateResponse);
+    }
+
+    @PatchMapping("/{customerId}/segment")
+    public Mono<CustomerInitiateResponse> changeCustomerSegment(
+            @PathVariable("customerId") UUID customerId,
+            @Valid @RequestBody CustomerChangeSegmentRequest request
+    ) {
+        return initiateChangeCustomerSegmentUseCase.execute(
+                customerWebMapper.toChangeSegmentCommand(customerId, request)
+        ).map(customerWebMapper::toResponse);
     }
 
     @GetMapping
-    public List<FindAllResult> findAll(
+    public Flux<FindAllResult> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber,
@@ -86,7 +93,7 @@ public class CustomerController {
         return findAllUseCase.findAll(criteria);
     }
 
-    public List<FindAllResult> findAll(
+    public Flux<FindAllResult> findAll(
             String name,
             String email,
             String phoneNumber,
@@ -95,14 +102,14 @@ public class CustomerController {
         return findAll(name, email, phoneNumber, status, null);
     }
 
-    @GetMapping("/report")
-    public List<CustomerStatusReportResponse> getCustomerStatusReport() {
-        return customerStatusReportUseCase.execute().stream()
-                .map(r -> new CustomerStatusReportResponse(r.status(), r.total()))
-                .toList();
+    @GetMapping({"/statistics", "/stats"})
+    public Mono<CustomerStatisticsResponse> getCustomerStatistics() {
+        return customerStatisticsUseCase.execute()
+                .map(customerWebMapper::toStatisticsResponse);
     }
+
     @DeleteMapping("/{id}")
-    public Boolean deleteCustomerById(@PathVariable String id){
+    public Mono<Boolean> deleteCustomerById(@PathVariable String id){
         return deleteCustomerUseCase.deleteCustomerById(id);
     }
 }

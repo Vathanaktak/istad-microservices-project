@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface CustomerSegmentMongoRepository extends ReactiveMongoRepository<CustomerSegmentDocument, String> {
     Mono<CustomerSegmentDocument> findByNameIgnoreCase(String name);
+    Mono<Boolean> existsByNameIgnoreCase(String name);
 }

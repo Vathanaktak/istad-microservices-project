@@ -8,16 +8,16 @@ import org.springframework.data.annotation.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerStatusAggregationDto {
+public class CustomerStatusSegmentAggregationDto {
     @Id
-    private String id;
-    private String status;
+    private GroupId id;
     private long total;
 
-    public String getResolvedStatus() {
-        if (status != null && !status.isBlank()) {
-            return status;
-        }
-        return id;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GroupId {
+        private String status;
+        private String segment;
     }
 }
