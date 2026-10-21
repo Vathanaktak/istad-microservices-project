@@ -26,10 +26,6 @@ public class CustomerDocument implements Persistable<String> {
     private String phoneNumber;
     private CustomerStatus status;
 
-    // References CustomerSegmentDocument in customer_segments collection.
-    // In Spring Data MongoDB, @DocumentReference is the modern reference annotation (Spring Data 3.3+),
-    // and @DBRef is the legacy BSON DBRef reference annotation. Both cannot be placed on the same field
-    // simultaneously without causing a MappingException, so @DocumentReference is used here.
     @DocumentReference
     private CustomerSegmentDocument customerSegment;
 
