@@ -12,7 +12,6 @@ public class WebFluxController {
         Flux<String> flux = Flux.just("apple","banana","mango")
                 .log();
         return flux;
-
     }
 
 }
