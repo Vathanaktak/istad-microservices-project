@@ -1,8 +1,0 @@
-plugins {
-    id 'sping-common-conventions'
-}
-
-dependencies {
-    api 'kh.edu.istad:order-application-service'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-}

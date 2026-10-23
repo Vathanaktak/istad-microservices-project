@@ -51,19 +51,11 @@
               <build path="$PROJECT_DIR$/microservices/order-service-learning" name="order-service-learning">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-service-learning" />
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain" />
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain/order-application-service" />
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain/order-domain-core" />
                   <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-main" />
-                </projects>
-              </build>
-              <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
-                <projects>
-                  <project path="$PROJECT_DIR$/microservices/order-services" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-application-service" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-domain-core" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-main" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-message" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-persistence" />
-                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-restapi" />
+                  <project path="$PROJECT_DIR$/microservices/order-service-learning/order-service-persistence" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/microservices/payment-service" name="payment-service">
@@ -107,15 +99,11 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservices/order-service-learning" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain/order-application-service" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-domain/order-domain-core" />
             <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-main" />
-            <option value="$PROJECT_DIR$/microservices/order-services" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-application-service" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-domain-core" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-main" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-message" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-persistence" />
-            <option value="$PROJECT_DIR$/microservices/order-services/order-service-restapi" />
+            <option value="$PROJECT_DIR$/microservices/order-service-learning/order-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/payment-service" />
             <option value="$PROJECT_DIR$/microservices/payment-service/payment-service-domain" />
             <option value="$PROJECT_DIR$/microservices/payment-service/payment-service-domain/payment-application-service" />

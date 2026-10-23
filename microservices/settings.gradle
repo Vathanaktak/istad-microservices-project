@@ -1,6 +1,6 @@
 rootProject.name = 'microservices'
 includeBuild 'business-services'
 includeBuild 'customer-services'
-includeBuild 'order-services'
+//includeBuild 'order-services'
 includeBuild 'payment-service'
 includeBuild 'order-service-learning'
