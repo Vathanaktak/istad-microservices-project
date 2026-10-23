@@ -2,13 +2,18 @@ package kh.edu.istad.platform.business.restapi.controller;
 
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.business.domain.dto.InitiateBusinessCommand;
+import kh.edu.istad.platform.business.domain.usecase.GetBusinessUseCase;
 import kh.edu.istad.platform.business.domain.usecase.InitiateBusinessUseCase;
 import kh.edu.istad.platform.business.restapi.dto.BusinessCreateRequest;
 import kh.edu.istad.platform.business.restapi.dto.BusinessCreateResponse;
+import kh.edu.istad.platform.business.restapi.dto.GetBusinessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/businesses")
@@ -16,6 +21,7 @@ import reactor.core.publisher.Mono;
 public class BusinessController {
 
     private final InitiateBusinessUseCase businessUseCase;
+    private final GetBusinessUseCase getBusinessUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,6 +39,24 @@ public class BusinessController {
                         result.displayName(),
                         result.active(),
                         result.message()
+                ));
+    }
+
+    public Mono<GetBusinessResponse> findById(
+            @PathVariable UUID businessId){
+        return getBusinessUseCase.findById(businessId)
+                .map( b -> new GetBusinessResponse(
+                        b.businessId(),
+                        b.legalName(),
+                        b.displayName(),
+                        b.email(),
+                        b.phoneNumber(),
+                        b.active()
+                ))
+                .switchIfEmpty(Mono.error(
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,"Business By Id not found"
+                        )
                 ));
     }
 

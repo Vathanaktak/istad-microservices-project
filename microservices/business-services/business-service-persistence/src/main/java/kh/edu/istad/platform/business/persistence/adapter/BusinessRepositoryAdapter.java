@@ -38,6 +38,12 @@ public class BusinessRepositoryAdapter implements BusinessRepository {
         return businessRepository.existsByLegalName(legalName);
     }
 
+    @Override
+    public Mono<Business> findById(BusinessId businessId) {
+        return businessRepository.findById(businessId.value())
+                .map(this::toDomain);
+    }
+
     private Business toDomain(BusinessDocument doc){
         return Business.builder()
                 .businessId(new BusinessId(doc.getId()))

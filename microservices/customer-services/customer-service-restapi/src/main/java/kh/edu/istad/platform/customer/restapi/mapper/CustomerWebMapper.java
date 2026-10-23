@@ -20,4 +20,6 @@ public interface CustomerWebMapper {
     CustomerUpdateInitiateResponse toUpdateResponse(InitiateUpdateCustomerResult result);
 
     CustomerDeactivateInitiateResponse toDeactivateResponse(InitiateDeactivateCustomerResult result);
+
+    GetCustomerResponse toGetCustomerResponse(GetCustomerResult getCustomerResult);
 }

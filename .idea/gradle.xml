@@ -80,6 +80,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/eureka-server" />
             <option value="$PROJECT_DIR$/istad-common" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-domain" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-restapi" />

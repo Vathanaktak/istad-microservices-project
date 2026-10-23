@@ -3,3 +3,5 @@ includeBuild 'istad-common'
 includeBuild 'microservices'
 //includeBuild 'build-logic'
 
+
+include 'eureka-server'

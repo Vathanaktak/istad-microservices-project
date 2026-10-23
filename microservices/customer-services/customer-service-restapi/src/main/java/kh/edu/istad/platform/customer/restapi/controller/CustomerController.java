@@ -4,14 +4,19 @@ package kh.edu.istad.platform.customer.restapi.controller;
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
+import kh.edu.istad.platform.customer.domain.usecase.GetCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateDeactivateCustomerUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.InitiateUpdateCustomerUseCase;
 import kh.edu.istad.platform.customer.restapi.dto.*;
 import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -24,6 +29,11 @@ public class CustomerController {
     private final CustomerWebMapper customerWebMapper;
     private final InitiateUpdateCustomerUseCase initiateUpdateCustomerUseCase;
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
+    private final GetCustomerUseCase getCustomerUseCase;
+
+
+    @Value("${server.port}")
+    private String serverPort;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -34,6 +44,19 @@ public class CustomerController {
                 customerWebMapper.toCommand(customerInitiateRequest)
         );
         return customerWebMapper.toResponse(result);
+    }
+
+    @GetMapping("/{customerId}")
+    public  GetCustomerResponse getCustomerById(
+            @PathVariable UUID customerId
+    ){
+        return getCustomerUseCase.execute(customerId)
+                .map(customerWebMapper::toGetCustomerResponse)
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,"customer not found"
+                        )
+                );
     }
 
     @PutMapping("/{customerId}")

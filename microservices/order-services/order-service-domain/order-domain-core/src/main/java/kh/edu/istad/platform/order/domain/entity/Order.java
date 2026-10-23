@@ -37,6 +37,19 @@ public class Order extends AggregateRoot<OrderId> {
         this.orderStatus = OrderStatus.PENDING;
         initializeOrderItem();
     }
+    public void pay(){
+        if(orderStatus != OrderStatus.PENDING){
+            throw new DomainException("Only a PENDING order can be paid");
+        }
+        orderStatus = OrderStatus.PAID;
+    }
+    public void cancel(List<String> failureMessages){
+        if(orderStatus != OrderStatus.PENDING){
+            throw new DomainException("Only a PENDING order can be cancelled");
+        }
+        orderStatus = OrderStatus.CANCELLED;
+        this.failureMessages = failureMessages;
+    }
 
     public void initializeOrderItem(){
         for (OrderItem item : items){

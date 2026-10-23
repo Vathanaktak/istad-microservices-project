@@ -2,6 +2,8 @@ server:
   port: 9092
 
 spring:
+  application:
+    name: order-service
   datasource:
     url: jdbc:postgresql://localhost:5433/product_db
     username: postgres
@@ -14,3 +16,35 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+eureka:                          # NEW
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    healthcheck:
+      enabled: true              # Part 4: push real /actuator/health status (UP/DOWN) to Eureka
+    # registry-fetch-interval-seconds: 5      # Part 4 experiment (default 30)
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    # lease-renewal-interval-in-seconds: 5    # Part 4 experiment (default 30)
+    # lease-expiration-duration-in-seconds: 10 # Part 4 experiment (default 90)
+
+management:                      # NEW
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+---
+# PART 1 MODE: run with --spring.profiles.active=hardcoded  -> Eureka completely off
+spring:
+  config:
+    activate:
+      on-profile: hardcoded
+eureka:
+  client:
+    enabled: false

@@ -1,0 +1,23 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # A standalone server must NOT register with itself or fetch from itself
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    enable-self-preservation: true          # default true. Part 4: set false and compare
+    # ---- Part 4 experiments: uncomment to see changes faster (defaults in brackets) ----
+    # eviction-interval-timer-in-ms: 5000          # [60000] how often expired leases are removed
+    # response-cache-update-interval-ms: 3000      # [30000]
+    # use-read-only-response-cache: false          # [true]  stale read-only cache is a common surprise
+    # renewal-percent-threshold: 0.85              # [0.85]  self-preservation trigger
