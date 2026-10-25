@@ -42,6 +42,7 @@ public class BusinessController {
                 ));
     }
 
+    @GetMapping("/{businessId}")
     public Mono<GetBusinessResponse> findById(
             @PathVariable UUID businessId){
         return getBusinessUseCase.findById(businessId)

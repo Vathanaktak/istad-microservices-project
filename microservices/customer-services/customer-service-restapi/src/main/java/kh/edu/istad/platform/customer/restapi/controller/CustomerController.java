@@ -1,6 +1,5 @@
-
-
 package kh.edu.istad.platform.customer.restapi.controller;
+
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.InitiateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.InitiateDeactivateCustomerCommand;
@@ -11,15 +10,15 @@ import kh.edu.istad.platform.customer.domain.usecase.InitiateUpdateCustomerUseCa
 import kh.edu.istad.platform.customer.restapi.dto.*;
 import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/customers")
@@ -31,7 +30,6 @@ public class CustomerController {
     private final InitiateDeactivateCustomerUseCase initiateDeactivateCustomerUseCase;
     private final GetCustomerUseCase getCustomerUseCase;
 
-
     @Value("${server.port}")
     private String serverPort;
 
@@ -39,7 +37,8 @@ public class CustomerController {
     @PostMapping
     public CustomerInitiateResponse initiateCustomer(
             @Valid @RequestBody CustomerInitiateRequest customerInitiateRequest
-            ){
+    ){
+        log.info(">>> [CUSTOMER-SERVICE : {}] POST create customer: {}", serverPort, customerInitiateRequest.username());
         InitiateCustomerResult result = initiateCustomerUseCase.execute(
                 customerWebMapper.toCommand(customerInitiateRequest)
         );
@@ -47,14 +46,15 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
-    public  GetCustomerResponse getCustomerById(
+    public GetCustomerResponse getCustomerById(
             @PathVariable UUID customerId
     ){
+        log.info(">>> [CUSTOMER-SERVICE : {}] GET customer by id: {}", serverPort, customerId);
         return getCustomerUseCase.execute(customerId)
                 .map(customerWebMapper::toGetCustomerResponse)
                 .orElseThrow(
                         () -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,"customer not found"
+                                HttpStatus.NOT_FOUND, "customer not found"
                         )
                 );
     }

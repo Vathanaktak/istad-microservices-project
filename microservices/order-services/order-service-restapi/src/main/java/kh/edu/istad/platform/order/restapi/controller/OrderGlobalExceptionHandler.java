@@ -22,6 +22,9 @@ public class OrderGlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
         problem.setTitle("Dependent Service Unavailable");
         problem.setProperty("service", ex.getServiceName());
+        if (ex.getCause() != null) {
+            problem.setProperty("cause", ex.getCause().getClass().getSimpleName() + ": " + ex.getCause().getMessage());
+        }
         return problem;
     }
 
