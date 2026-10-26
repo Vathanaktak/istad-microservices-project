@@ -2,6 +2,16 @@ server:
   port: 9091
 
 spring:
+  application:
+    name: customer-service
+  cloud:
+    consul:
+      discovery:
+        health-check-url: http://host.docker.internal:${server.port}/actuator/health
+        service-name: customer-service
+        instance-id: ${spring.application.name}-${random.value}
+        prefer-ip-address: true
+
   mongodb:
     uri: mongodb://mongod:mongod@localhost:2026/db_customer?authSource=admin
   data:

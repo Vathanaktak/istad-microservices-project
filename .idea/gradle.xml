@@ -51,6 +51,7 @@
               <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-services" />
+                  <project path="$PROJECT_DIR$/microservices/order-services/order-service-client" />
                   <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
                   <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-application-service" />
                   <project path="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-domain-core" />
@@ -101,6 +102,7 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservices/order-services" />
+            <option value="$PROJECT_DIR$/microservices/order-services/order-service-client" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-application-service" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain/order-domain-core" />

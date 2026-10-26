@@ -1,6 +1,10 @@
 
 plugins {
     id 'spring-boot-common-conventions'
+    id 'spring-cloud-common-conventions'
+}
+ext {
+    springCloudVersion = "2025.1.4"
 }
 
 dependencies {
@@ -9,8 +13,11 @@ dependencies {
     implementation 'kh.edu.istad:order-service-persistence'
     implementation 'kh.edu.istad:order-domain-core'
     implementation 'kh.edu.istad:order-service-restapi'
+    implementation 'kh.edu.istad:order-service-client'
 
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
 }
