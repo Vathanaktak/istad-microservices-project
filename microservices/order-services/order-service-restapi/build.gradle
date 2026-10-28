@@ -1,5 +1,6 @@
 plugins {
     id 'sping-common-conventions'
+    id 'spring-cloud-common-conventions'
 }
 
 dependencies {
@@ -7,4 +8,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webclient'
     testImplementation 'io.projectreactor:reactor-test'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
+
 }

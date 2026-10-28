@@ -10,4 +10,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webclient'
     testImplementation 'io.projectreactor:reactor-test'
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+
+
 }

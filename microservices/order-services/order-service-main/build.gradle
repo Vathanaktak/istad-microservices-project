@@ -15,9 +15,15 @@ dependencies {
     implementation 'kh.edu.istad:order-service-restapi'
     implementation 'kh.edu.istad:order-service-client'
 
+    implementation 'org.liquibase:liquibase-core'
+
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-//    runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
+
+    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
     runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+
 }
