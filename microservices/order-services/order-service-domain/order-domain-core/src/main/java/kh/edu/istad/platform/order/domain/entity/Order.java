@@ -1,50 +1,126 @@
 package kh.edu.istad.platform.order.domain.entity;
 
 import kh.edu.istad.common.entity.AggregateRoot;
-import kh.edu.istad.common.exception.DomainException;
-import kh.edu.istad.platform.business.domain.valueobject.BusinessId;
-import kh.edu.istad.platform.business.domain.valueobject.Money;
-import kh.edu.istad.platform.order.domain.valueobject.*;
-
-import javax.swing.*;
+import kh.edu.istad.common.valueobject.*;
+import kh.edu.istad.platform.order.domain.exception.OrderDomainException;
+import kh.edu.istad.platform.order.domain.valueobject.StreetAddress;
+import kh.edu.istad.platform.order.domain.valueobject.TrackingId;
 import java.util.List;
 import java.util.UUID;
 
 public class Order extends AggregateRoot<OrderId> {
 
-    private final UUID customerId;
+    private final CustomerId customerId;
     private final BusinessId businessId;
-    private final StreetAddress streetAddress;
-    private Money price;
-    private List<OrderItem> items;
+    private final StreetAddress deliveryAddress;
+    private final Money price;
+    private final List<OrderItem> items;
+
     private TrackingId trackingId;
     private OrderStatus orderStatus;
-    private List<String> failureMessages;
+    private List<String> failureMessage;
+    private Long version;
+
+//    =======start domain logic ============
+
+    public void InitializeOrder(){
+
+        if(super.getId() != null || orderStatus != null){
+            throw new OrderDomainException(
+                    "Order has already been initialized"
+            );
+        }
+
+        super.setId(new OrderId(UUID.randomUUID()));
+        trackingId = new TrackingId(UUID.randomUUID());
+        orderStatus = OrderStatus.PENDING;
+        validateOrder();
+
+    }
+
+    // validate pay order
+
+    public void pay(){
+        if(orderStatus != OrderStatus.PENDING){
+            throw new OrderDomainException(
+                    "Order state is not correct for pay operation"
+            );
+        }
+        orderStatus = OrderStatus.PAID;
+    }
+
+    //=======Approve order
+    public void approve(){
+        if(orderStatus != OrderStatus.PAID){
+            throw new OrderDomainException(
+                    "Order state is not correct for approve"
+            );
+        }
+        orderStatus = OrderStatus.APPROVED;
+    }
+    // cancel
+    public void initCancel(List<String> failureMessage){
+        if(orderStatus != OrderStatus.PAID){
+            throw new OrderDomainException(
+                    "Order state is not correct for init cancel"
+            );
+        }
+        orderStatus = OrderStatus.CANCELLING;
+        updateFailureMessage(failureMessage);
+    }
+
+    public void updateFailureMessage(
+            List<String> failureMessage
+    ){
+        if(this.failureMessage != null && failureMessage != null) {
+            this.failureMessage.addAll(failureMessage);
+        }else {
+            this.failureMessage = failureMessage;
+        }
+    }
+
+    public void cancel(){
+        if(orderStatus != OrderStatus.PENDING || orderStatus != OrderStatus.CANCELLING){
+            throw  new OrderDomainException(
+                    "Order state is not correct for init cancel"
+            );
+        }
+    }
 
 
     public void validateOrder(){
-        if(price == null || price.amount().compareTo(java.math.BigDecimal.ZERO) <= 0){
-            throw new DomainException("Total order price must be greater than zero");
+        if(!price.isGreaterThanZero() || price == null){
+            throw new OrderDomainException
+                    ("Price must be greater than zero and must be not null"
+                    );
         }
-        if(items == null || items.isEmpty()){
-            throw new DomainException("Order must contain at least one item");
+        //validate product price
+        Money orderSubTotal = items.stream()
+                .map(orderItem -> {
+                    validateItemPrice(orderItem);
+                    return orderItem.getSubTotal();
+                })
+                .reduce(Money.ZERO,Money::add);
+
+        if(!price.equals(orderSubTotal)){
+            throw new OrderDomainException(
+                    "Price is not equal to order subTotal price"
+            );
         }
     }
 
-    public void initializeOrder(){
-        setId(OrderId.generate());
-        this.trackingId = TrackingId.generate();
-        this.orderStatus = OrderStatus.PENDING;
-        initializeOrderItem();
-    }
-
-    public void initializeOrderItem(){
-        for (OrderItem item : items){
-            item.initializeOrderItem(super.getId(),OrderItemId.generate());
+    private void validateItemPrice(OrderItem orderItem){
+        if(orderItem.getPrice().equals(orderItem.getProduct().getPrice())){
+            throw new OrderDomainException(
+                    "Price must be equal to product price"
+            );
         }
     }
 
-    public UUID getCustomerId() {
+
+//    ===========end domain logic============
+
+    public CustomerId getCustomerId() {
         return customerId;
     }
 
@@ -52,8 +128,8 @@ public class Order extends AggregateRoot<OrderId> {
         return businessId;
     }
 
-    public StreetAddress getStreetAddress() {
-        return streetAddress;
+    public StreetAddress getDeliveryAddress() {
+        return deliveryAddress;
     }
 
     public Money getPrice() {
@@ -72,35 +148,39 @@ public class Order extends AggregateRoot<OrderId> {
         return orderStatus;
     }
 
-    public List<String> getFailureMessages() {
-        return failureMessages;
+    public List<String> getFailureMessage() {
+        return failureMessage;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     private Order(Builder builder) {
-        super.setId(builder.orderId);
+        super.setId(builder.id);
         customerId = builder.customerId;
         businessId = builder.businessId;
-        streetAddress = builder.streetAddress;
+        deliveryAddress = builder.deliveryAddress;
         price = builder.price;
         items = builder.items;
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
-        failureMessages = builder.failureMessages;
+        failureMessage = builder.failureMessage;
+        version = builder.version;
     }
-
-    public static Builder builder() { return new Builder(); }
 
 
     public static final class Builder {
-        private OrderId orderId;
-        private UUID customerId;
+        private OrderId id;
+        private CustomerId customerId;
         private BusinessId businessId;
-        private StreetAddress streetAddress;
+        private StreetAddress deliveryAddress;
         private Money price;
         private List<OrderItem> items;
         private TrackingId trackingId;
         private OrderStatus orderStatus;
-        private List<String> failureMessages;
+        private List<String> failureMessage;
+        private Long version;
 
         private Builder() {
         }
@@ -110,11 +190,11 @@ public class Order extends AggregateRoot<OrderId> {
         }
 
         public Builder id(OrderId val) {
-            orderId = val;
+            id = val;
             return this;
         }
 
-        public Builder customerId(UUID val) {
+        public Builder customerId(CustomerId val) {
             customerId = val;
             return this;
         }
@@ -124,12 +204,12 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
-        public Builder streetAddress(StreetAddress val) {
-            streetAddress = val;
+        public Builder deliveryAddress(StreetAddress val) {
+            deliveryAddress = val;
             return this;
         }
 
-        public Builder money(Money val) {
+        public Builder price(Money val) {
             price = val;
             return this;
         }
@@ -149,8 +229,13 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
-        public Builder failureMessages(List<String> val) {
-            failureMessages = val;
+        public Builder failureMessage(List<String> val) {
+            failureMessage = val;
+            return this;
+        }
+
+        public Builder version(Long val) {
+            version = val;
             return this;
         }
 

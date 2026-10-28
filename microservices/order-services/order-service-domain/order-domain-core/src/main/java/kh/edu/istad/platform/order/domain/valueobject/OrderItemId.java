@@ -3,9 +3,9 @@ package kh.edu.istad.platform.order.domain.valueobject;
 import java.util.UUID;
 
 public record OrderItemId(
-        UUID value
+        Integer value
 ) {
     public static OrderItemId generate(){
-        return new OrderItemId(UUID.randomUUID());
+        return new OrderItemId(Integer.valueOf(String.valueOf(UUID.randomUUID())));
     }
 }

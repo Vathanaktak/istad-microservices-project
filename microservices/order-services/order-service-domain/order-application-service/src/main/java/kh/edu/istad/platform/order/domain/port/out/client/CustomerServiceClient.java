@@ -5,7 +5,5 @@ import reactor.core.publisher.Flux;
 
 public interface CustomerServiceClient
 {
-
     Flux<GetCustomerResult> getCustomerName();
-
 }

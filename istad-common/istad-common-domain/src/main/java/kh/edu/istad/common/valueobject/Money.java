@@ -1,20 +1,3 @@
-////for java project
-//package kh.edu.istad.common.valueobject;
-//import java.math.BigDecimal;
-////150$ is new Money
-//
-//public record Money (
-//        BigDecimal amount
-//){
-//    public void isGreaterThanZero(){
-//        if(!(amount.compareTo(BigDecimal.ZERO) > 0)){
-//            System.out.println("Money is not greater than zero");
-//            throw new RuntimeException("Money is not greater than zero");
-//        }
-//        System.out.println("Money is greater than zero");
-//    }
-//}
-
 package kh.edu.istad.common.valueobject;
 
 import java.math.BigDecimal;
@@ -23,6 +6,10 @@ import java.util.Objects;
 
 public class Money {
     private final BigDecimal amount;
+
+    public static final Money zero(){
+        return new Money(BigDecimal.ZERO);
+    }
 
     public static final Money ZERO = new Money(BigDecimal.ZERO);
 

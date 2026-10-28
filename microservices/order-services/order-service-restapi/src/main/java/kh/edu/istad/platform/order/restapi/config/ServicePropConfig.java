@@ -14,6 +14,4 @@ public class ServicePropConfig {
     private String env;
     private String version;
     private String baseUrl; //base-url
-
-
 }

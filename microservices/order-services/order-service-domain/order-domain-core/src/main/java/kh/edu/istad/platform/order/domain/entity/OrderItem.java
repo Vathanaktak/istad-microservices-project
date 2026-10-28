@@ -1,42 +1,35 @@
 package kh.edu.istad.platform.order.domain.entity;
 
 import kh.edu.istad.common.entity.BaseEntity;
-import kh.edu.istad.platform.business.domain.valueobject.Money;
-import kh.edu.istad.platform.order.domain.valueobject.OrderId;
+import kh.edu.istad.common.valueobject.Money;
+import kh.edu.istad.common.valueobject.OrderId;
 import kh.edu.istad.platform.order.domain.valueobject.OrderItemId;
 
 public class OrderItem extends BaseEntity<OrderItemId> {
 
-    private OrderId orderId;
-    private final String productName;
-    private final int qty;
+    private final OrderId orderId;
+    private final Product product;
+    private final Integer qty;
     private final Money price;
-    private Money subTotal;
+    private final Money subTotal;
 
-    public OrderItem(OrderItemId orderItemId, String productName, int qty, Money price) {
-        super.setId(orderItemId);
-        this.productName = productName;
+    public OrderItem(OrderId orderId, Product product, Integer qty, Money price, Money subTotal) {
+        this.orderId = orderId;
+        this.product = product;
         this.qty = qty;
         this.price = price;
-        this.subTotal = new Money(price.amount().multiply(java.math.BigDecimal.valueOf(qty)));
-    }
-
-    public void initializeOrderItem(
-            OrderId orderId, OrderItemId orderItemId
-    ){
-        this.orderId = orderId;
-        super.setId(orderItemId);
+        this.subTotal = subTotal;
     }
 
     public OrderId getOrderId() {
         return orderId;
     }
 
-    public String getProductName() {
-        return productName;
+    public Product getProduct() {
+        return product;
     }
 
-    public int getQty() {
+    public Integer getQty() {
         return qty;
     }
 
@@ -46,5 +39,65 @@ public class OrderItem extends BaseEntity<OrderItemId> {
 
     public Money getSubTotal() {
         return subTotal;
+    }
+
+    private OrderItem(Builder builder) {
+        super.setId(builder.id);
+        orderId = builder.orderId;
+        product = builder.product;
+        qty = builder.qty;
+        price = builder.price;
+        subTotal = builder.subTotal;
+    }
+
+
+    public static final class Builder {
+        private OrderItemId id;
+        private OrderId orderId;
+        private Product product;
+        private Integer qty;
+        private Money price;
+        private Money subTotal;
+
+        private Builder() {
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Builder id(OrderItemId val) {
+            id = val;
+            return this;
+        }
+
+        public Builder orderId(OrderId val) {
+            orderId = val;
+            return this;
+        }
+
+        public Builder product(Product val) {
+            product = val;
+            return this;
+        }
+
+        public Builder qty(Integer val) {
+            qty = val;
+            return this;
+        }
+
+        public Builder price(Money val) {
+            price = val;
+            return this;
+        }
+
+        public Builder subTotal(Money val) {
+            subTotal = val;
+            return this;
+        }
+
+        public OrderItem build() {
+            return new OrderItem(this);
+        }
     }
 }
