@@ -1,4 +1,3 @@
-
 plugins {
     id 'spring-boot-common-conventions'
     id 'spring-cloud-common-conventions'
@@ -8,6 +7,9 @@ ext {
 }
 
 dependencies {
+    implementation 'kh.edu.istad:istad-common-swagger'
+
+
     implementation 'kh.edu.istad:customer-application-service'
     implementation 'kh.edu.istad:customer-service-message'
     implementation 'kh.edu.istad:customer-service-persistence'

@@ -11,9 +11,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class CustomerServiceClientAdapter implements CustomerServiceClient {
-
     private final WebClient.Builder webClientConfig;
-
     public record getCustomer(
             UUID customerId,
             String username,
@@ -22,7 +20,6 @@ public class CustomerServiceClientAdapter implements CustomerServiceClient {
             String email,
             String phoneNumber
     ){}
-
     @Override
     public Flux<GetCustomerResult> getCustomerName() {
 
@@ -34,7 +31,6 @@ public class CustomerServiceClientAdapter implements CustomerServiceClient {
                 .uri("/api/customers")
                 .retrieve()
                 .bodyToFlux(getCustomer.class);
-
         return response.map(
                 cus ->
                         new GetCustomerResult(

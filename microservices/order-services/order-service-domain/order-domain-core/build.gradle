@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     //this show how one module can call another module
-    api 'kh.edu.istad:istad-common-domain'
+    api  libs.order.domain.core
     api 'kh.edu.istad:business-domain-core'
 }

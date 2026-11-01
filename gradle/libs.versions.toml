@@ -1,0 +1,31 @@
+    [versions]
+
+    java-version = "25"
+    spring-boot-gradle-plugin = "4.1.1"
+    dependency-managnment-plugin = "1.1.7"
+    swagger-plugin = "3.2.0"
+
+    [libraries]
+
+    spring-boot-gradle-plugin = {module='org.springframework.boot:spring-boot-gradle-plugin',version.ref="spring-boot-gradle-plugin"}
+    dependency-managnment-plugin = {module = 'io.spring.gradle:dependency-management-plugin',version.ref="dependency-managnment-plugin"}
+    spring-boot-stater-data-r2dbc = {module = "org.springframework.boot:spring-boot-starter-data-r2dbc"}
+
+    springdoc-openapi-stater-webmvc-ui = {module = "org.springdoc:springdoc-openapi-starter-webmvc-ui",version.ref="swagger-plugin"}
+
+#    order service
+    order-application-service = {module = "kh.edu.istad:order-domain-core"}
+    order-domain-core = {module = "kh.edu.istad:istad-common-domain"}
+
+    [bundles]
+
+    gradle-dependency-managnment = [
+        "spring-boot-gradle-plugin",
+        "dependency-managnment-plugin"
+    ]
+
+    [plugins]
+
+    java-plugin-conventions = { id = "java-common-conventions"}
+    spring-plugin-conventions = {id = "sping-common-conventions"}
+    spring-boot-plugin-conventions = {id = "spring-boot-commont-conventions"}
