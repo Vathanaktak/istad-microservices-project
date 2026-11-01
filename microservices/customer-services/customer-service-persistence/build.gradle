@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:customer-application-service'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    testImplementation 'io.projectreactor:reactor-test'
+    api libs.customer.app.service
+//    implementation libs.spring.boot.starter.data.jpa
+    implementation libs.spring.boot.starter.data.mongodb.reactive
+    testImplementation libs.reactor.test
 }

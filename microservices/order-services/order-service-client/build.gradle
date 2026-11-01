@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id 'sping-common-conventions'
     id 'spring-cloud-common-conventions'
 }
@@ -7,9 +7,9 @@ ext {
 }
 
 dependencies {
-    api 'kh.edu.istad:order-application-service'
+    api libs.order.app.service
 
-    implementation 'org.springframework.boot:spring-boot-starter-webclient'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-    testImplementation 'io.projectreactor:reactor-test'
+    implementation libs.spring.boot.starter.webclient
+    implementation libs.spring.cloud.starter.loadbalancer
+    testImplementation libs.reactor.test
 }

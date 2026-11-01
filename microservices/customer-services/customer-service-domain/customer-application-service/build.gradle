@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:customer-domain-core'
-    api 'io.projectreactor:reactor-core'
+    api libs.customer.core
+    api libs.reactor.core
 
-    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation libs.reactor.test
 }

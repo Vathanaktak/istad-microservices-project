@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    api 'io.projectreactor:reactor-core'
+    api libs.reactor.core
     api libs.order.application.service
 
-    implementation 'org.springframework.boot:spring-boot-starter-webclient'
-    testImplementation 'io.projectreactor:reactor-test'
+    implementation libs.spring.boot.starter.webclient
+    testImplementation libs.reactor.test
 }

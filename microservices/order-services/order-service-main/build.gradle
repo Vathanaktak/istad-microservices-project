@@ -7,24 +7,23 @@ ext {
 }
 
 dependencies {
-    implementation 'kh.edu.istad:istad-common-swagger'
+    implementation libs.istad.common.swagger
 
-    implementation 'kh.edu.istad:order-application-service'
-    implementation 'kh.edu.istad:order-service-message'
-    implementation 'kh.edu.istad:order-service-persistence'
-    implementation 'kh.edu.istad:order-domain-core'
-    implementation 'kh.edu.istad:order-service-restapi'
-    implementation 'kh.edu.istad:order-service-client'
+    implementation libs.order.app.service
+    implementation libs.order.message
+    implementation libs.order.persistence
+    implementation libs.order.core
+    implementation libs.order.restapi
+    implementation libs.order.client
 
-    implementation 'org.liquibase:liquibase-core'
+    implementation libs.liquibase.core
 
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
+    implementation libs.spring.boot.starter.webmvc
+    implementation libs.spring.cloud.starter.consul.discovery
+    implementation libs.spring.boot.starter.actuator
+    implementation libs.spring.cloud.starter.consul.config
 
-    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
-    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
-
+    implementation libs.spring.boot.starter.liquibase
+    runtimeOnly libs.postgresql
+    runtimeOnly libs.r2dbc.postgresql
 }

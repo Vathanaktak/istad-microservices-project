@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:business-application-service'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    api libs.business.app.service
+    implementation libs.spring.boot.starter.data.mongodb.reactive
+    implementation libs.spring.boot.starter.webflux
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
 }

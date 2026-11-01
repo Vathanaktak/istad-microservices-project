@@ -7,18 +7,17 @@ ext {
 }
 
 dependencies {
-    implementation 'kh.edu.istad:istad-common-swagger'
+    implementation libs.istad.common.swagger
 
+    implementation libs.customer.app.service
+    implementation libs.customer.message
+    implementation libs.customer.persistence
+    implementation libs.customer.core
+    implementation libs.customer.restapi
 
-    implementation 'kh.edu.istad:customer-application-service'
-    implementation 'kh.edu.istad:customer-service-message'
-    implementation 'kh.edu.istad:customer-service-persistence'
-    implementation 'kh.edu.istad:customer-domain-core'
-    implementation 'kh.edu.istad:customer-service-restapi'
+    implementation libs.spring.boot.starter.webmvc
+    runtimeOnly libs.postgresql
 
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    runtimeOnly 'org.postgresql:postgresql'
-
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation libs.spring.cloud.starter.consul.discovery
+    implementation libs.spring.boot.starter.actuator
 }

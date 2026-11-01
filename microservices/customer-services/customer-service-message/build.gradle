@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:customer-application-service'
+    api libs.customer.app.service
 }

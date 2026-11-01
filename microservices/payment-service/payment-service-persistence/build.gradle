@@ -3,8 +3,7 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:payment-application-service'
-    runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+    api libs.payment.app.service
+    runtimeOnly libs.postgresql
+    implementation libs.spring.boot.starter.data.jpa
 }

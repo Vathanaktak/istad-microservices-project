@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api 'kh.edu.istad:order-application-service'
+    api libs.order.app.service
 }

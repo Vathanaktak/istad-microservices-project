@@ -4,12 +4,12 @@ plugins {
 
 dependencies {
     // Core dependency for building web applications (includes Tomcat and Spring MVC)
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation libs.spring.boot.starter.web
 
     // Recommended: Production-ready features like health checks and monitoring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation libs.spring.boot.starter.actuator
 
     // Testing framework (Includes JUnit, Mockito, and Spring Test utilities)
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation libs.spring.boot.starter.test
+    testRuntimeOnly libs.junit.platform.launcher
 }

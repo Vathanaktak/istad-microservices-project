@@ -3,14 +3,14 @@ plugins {
 }
 
 dependencies {
-    implementation 'kh.edu.istad:business-application-service'
-    implementation 'kh.edu.istad:business-service-message'
-    implementation 'kh.edu.istad:business-service-persistence'
-    implementation 'kh.edu.istad:business-domain-core'
-    implementation 'kh.edu.istad:business-service-restapi'
+    implementation libs.business.app.service
+    implementation libs.business.message
+    implementation libs.business.persistence
+    implementation libs.business.core
+    implementation libs.business.restapi
 
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation libs.spring.boot.starter.webmvc
 //    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    runtimeOnly libs.postgresql
+    implementation libs.spring.boot.starter.webflux
 }
