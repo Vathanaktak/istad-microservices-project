@@ -6,6 +6,7 @@ import kh.edu.istad.platform.business.domain.dto.InitiateBusinessResult;
 import kh.edu.istad.platform.business.domain.entity.Business;
 import kh.edu.istad.platform.business.domain.event.BusinessRegisteredEvent;
 import kh.edu.istad.platform.business.domain.port.out.BusinessRepository;
+import kh.edu.istad.platform.business.domain.usecase.GetBusinessByIdUseCase;
 import kh.edu.istad.platform.business.domain.usecase.InitiateBusinessUseCase;
 import kh.edu.istad.platform.business.domain.usecase.InitiateGetAllBusinessUseCase;
 import kh.edu.istad.platform.business.domain.valueobject.BusinessContact;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Builder
-public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase, InitiateGetAllBusinessUseCase {
+public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase, InitiateGetAllBusinessUseCase, GetBusinessByIdUseCase {
 
     private final BusinessDomainService businessDomainService;
     private final BusinessRepository businessRepository;
@@ -65,5 +68,17 @@ public class BusinessApplicationServiceImpl implements InitiateBusinessUseCase, 
 
                         )
                 );
+    }
+
+    @Override
+    public Mono<InitiateBusinessResult> getBusinessById(UUID businessId) {
+        return businessRepository.findById(businessId)
+                .switchIfEmpty(Mono.error(new DomainException("Business not found with id: " + businessId)))
+                .map(bus -> new InitiateBusinessResult(
+                        bus.getId().value(),
+                        bus.getBusinessName().displayName(),
+                        bus.isActive(),
+                        "Business found successfully"
+                ));
     }
 }

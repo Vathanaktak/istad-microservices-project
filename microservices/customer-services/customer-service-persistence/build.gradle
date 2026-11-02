@@ -4,7 +4,5 @@ plugins {
 
 dependencies {
     api libs.customer.app.service
-//    implementation libs.spring.boot.starter.data.jpa
     implementation libs.spring.boot.starter.data.mongodb.reactive
-    testImplementation libs.reactor.test
 }

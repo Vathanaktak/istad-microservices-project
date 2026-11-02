@@ -11,5 +11,4 @@ dependencies {
 
     implementation libs.spring.boot.starter.webclient
     implementation libs.spring.cloud.starter.loadbalancer
-    testImplementation libs.reactor.test
 }

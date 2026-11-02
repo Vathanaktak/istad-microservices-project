@@ -6,6 +6,4 @@ dependencies {
     api libs.business.app.service
     implementation libs.spring.boot.starter.data.mongodb.reactive
     implementation libs.spring.boot.starter.webflux
-    compileOnly libs.lombok
-    annotationProcessor libs.lombok
 }

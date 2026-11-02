@@ -4,10 +4,9 @@ plugins {
 }
 
 dependencies {
+    implementation 'kh.edu.istad:istad-common-webflux'
+    api 'kh.edu.istad:order-service-client'
     api libs.order.app.service
     implementation libs.spring.boot.starter.webmvc
-    implementation libs.spring.boot.starter.webclient
-    testImplementation libs.reactor.test
-
     implementation libs.spring.cloud.starter.consul.config
 }

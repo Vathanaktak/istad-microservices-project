@@ -16,7 +16,6 @@ dependencies {
     implementation libs.customer.restapi
 
     implementation libs.spring.boot.starter.webmvc
-    runtimeOnly libs.postgresql
 
     implementation libs.spring.cloud.starter.consul.discovery
     implementation libs.spring.boot.starter.actuator

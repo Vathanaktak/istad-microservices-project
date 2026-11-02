@@ -46,6 +46,7 @@
     # ISTAD Common & Business
     istad-common-swagger = {module = "kh.edu.istad:istad-common-swagger"}
     istad-common-domain = {module = "kh.edu.istad:istad-common-domain"}
+    istad-common-webflux = {module = "kh.edu.istad:istad-common-webflux"}
     business-domain-core = {module = "kh.edu.istad:business-domain-core"}
 
     # Order Service Modules (existing aliases kept for backwards compatibility)

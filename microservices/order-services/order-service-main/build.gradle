@@ -16,8 +16,6 @@ dependencies {
     implementation libs.order.restapi
     implementation libs.order.client
 
-    implementation libs.liquibase.core
-
     implementation libs.spring.boot.starter.webmvc
     implementation libs.spring.cloud.starter.consul.discovery
     implementation libs.spring.boot.starter.actuator

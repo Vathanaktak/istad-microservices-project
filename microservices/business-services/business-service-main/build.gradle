@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    implementation libs.istad.common.webflux
+
     implementation libs.business.app.service
     implementation libs.business.message
     implementation libs.business.persistence
@@ -10,7 +12,5 @@ dependencies {
     implementation libs.business.restapi
 
     implementation libs.spring.boot.starter.webmvc
-//    runtimeOnly 'com.h2database:h2'
-    runtimeOnly libs.postgresql
     implementation libs.spring.boot.starter.webflux
 }

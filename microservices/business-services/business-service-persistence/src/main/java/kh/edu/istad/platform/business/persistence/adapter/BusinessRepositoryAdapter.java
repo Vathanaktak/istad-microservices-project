@@ -12,9 +12,10 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
-
 public class BusinessRepositoryAdapter implements BusinessRepository {
 
     private final ReactiveMongoBusinessRepository businessRepository;
@@ -46,6 +47,11 @@ public class BusinessRepositoryAdapter implements BusinessRepository {
                 .findAll()
                 .map(this::toDomain);
         return businessFlux;
+    }
+
+    @Override
+    public Mono<Business> findById(UUID id) {
+        return businessRepository.findById(id).map(this::toDomain);
     }
 
     private Business toDomain(BusinessDocument doc){

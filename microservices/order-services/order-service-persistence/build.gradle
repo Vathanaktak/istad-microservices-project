@@ -5,7 +5,6 @@ plugins {
 dependencies {
     api libs.order.app.service
 
-    implementation libs.spring.boot.starter.webclient
     testImplementation libs.reactor.test
 
     implementation libs.spring.boot.stater.data.r2dbc

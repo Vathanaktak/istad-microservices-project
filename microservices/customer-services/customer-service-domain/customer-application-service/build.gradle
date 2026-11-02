@@ -5,6 +5,4 @@ plugins {
 dependencies {
     api libs.customer.core
     api libs.reactor.core
-
-    testImplementation libs.reactor.test
 }

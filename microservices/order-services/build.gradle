@@ -2,14 +2,6 @@ plugins {
     id 'spring-boot-common-conventions'
 }
 
-dependencies {
-    // Core dependency for building web applications (includes Tomcat and Spring MVC)
-    implementation libs.spring.boot.starter.web
-
-    // Recommended: Production-ready features like health checks and monitoring
-    implementation libs.spring.boot.starter.actuator
-
-    // Testing framework (Includes JUnit, Mockito, and Spring Test utilities)
-    testImplementation libs.spring.boot.starter.test
-    testRuntimeOnly libs.junit.platform.launcher
+bootJar {
+    enabled = false
 }

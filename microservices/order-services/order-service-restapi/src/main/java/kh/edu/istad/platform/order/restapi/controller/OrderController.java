@@ -1,9 +1,11 @@
 package kh.edu.istad.platform.order.restapi.controller;
 
 import jakarta.validation.Valid;
+import kh.edu.istad.common.exception.DomainException;
 import kh.edu.istad.platform.order.domain.dto.CreateOrderCommand;
 import kh.edu.istad.platform.order.domain.dto.CreateOrderItemCommand;
 import kh.edu.istad.platform.order.domain.dto.CreateOrderResult;
+import kh.edu.istad.platform.order.domain.dto.QueryCustomerResult;
 import kh.edu.istad.platform.order.domain.port.out.client.CustomerServiceClient;
 import kh.edu.istad.platform.order.domain.usecase.InitiateOrderUseCase;
 import kh.edu.istad.platform.order.restapi.config.ServicePropConfig;
@@ -35,11 +37,22 @@ public class OrderController {
     private final CustomerServiceClient customerServiceClient;
     private final CustomerMapper customerMapper;
 
+
     @GetMapping("/customer")
     public Flux<GetOrderResponse> getCustomer(){
         return customerServiceClient.getCustomerName()
                 .map(customerMapper::toResponse);
     }
+    @GetMapping("/customer/query")
+    public Flux<QueryCustomerResult> queryCustomer(){
+        return customerServiceClient.queryCustomers();
+    }
+//    @GetMapping
+//    public Flux<GetOrderResponse> findAllOrders(){
+//        // Implementation for finding all orders
+//        throw new DomainException("Not found");
+////        return Flux.empty();
+//    }
 
 //    @PostMapping
 //    public ResponseEntity<CreateOrderResponse> createOrderResponseResponseEntity(

@@ -5,7 +5,4 @@ plugins {
 dependencies {
     api libs.reactor.core
     api libs.order.application.service
-
-    implementation libs.spring.boot.starter.webclient
-    testImplementation libs.reactor.test
 }

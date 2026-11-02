@@ -3,7 +3,5 @@ plugins {
 }
 
 dependencies {
-    //this show how one module can call another module
     api libs.order.domain.core
-    api libs.business.domain.core
 }
