@@ -1,3 +1,5 @@
+server:
+  port: 8080
 
 spring:
 #  datasource:
@@ -19,6 +21,22 @@ spring:
   config:
     import:
       - "optional:consul:"
+  security:
+    oauth2:
+      client:
+        registration:
+          customer-client:
+            client-id: customer-service
+            client-secret: customer-secret
+            authorization-grant-type: client_credentials
+            scope:
+              - read
+              - write
+            client-authentication-method: client_secret_basic
+        provider:
+          customer-client:
+            issuer-uri: http://localhost:9000
+            token-uri: http://localhost:9000/oauth2/token
   cloud:
     consul:
       discovery:

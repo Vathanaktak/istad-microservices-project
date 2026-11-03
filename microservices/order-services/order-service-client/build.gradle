@@ -11,4 +11,5 @@ dependencies {
 
     implementation libs.spring.boot.starter.webclient
     implementation libs.spring.cloud.starter.loadbalancer
+    api libs.spring.boot.starter.oauth2.client
 }

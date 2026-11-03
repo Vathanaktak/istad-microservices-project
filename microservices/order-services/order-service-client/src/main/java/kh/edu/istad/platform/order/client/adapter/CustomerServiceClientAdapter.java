@@ -1,5 +1,5 @@
 package kh.edu.istad.platform.order.client.adapter;
-import kh.edu.istad.platform.order.client.httpClient.CustomerHttpClient;
+
 import kh.edu.istad.platform.order.domain.dto.GetCustomerResult;
 import kh.edu.istad.platform.order.domain.dto.QueryCustomerResult;
 import kh.edu.istad.platform.order.domain.port.out.client.CustomerServiceClient;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomerServiceClientAdapter implements CustomerServiceClient {
     private final WebClient.Builder webClientConfig;
-//    private final CustomerServiceClient customerServiceClient;
-    private final CustomerHttpClient customerHttpClient;
+    private final kh.edu.istad.platform.order.client.httpClient.CustomerServiceClient customerServiceClient;
+
     public record getCustomer(
             UUID customerId,
             String username,
@@ -24,9 +24,9 @@ public class CustomerServiceClientAdapter implements CustomerServiceClient {
             String email,
             String phoneNumber
     ){}
+
     @Override
     public Flux<GetCustomerResult> getCustomerName() {
-
         WebClient client = webClientConfig
                 .baseUrl("http://customer-service")
                 .build();
@@ -50,6 +50,6 @@ public class CustomerServiceClientAdapter implements CustomerServiceClient {
 
     @Override
     public Flux<QueryCustomerResult> queryCustomers() {
-        return customerHttpClient.getCustomerName();
+        return customerServiceClient.getCustomerName();
     }
 }
