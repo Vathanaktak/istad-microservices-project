@@ -14,7 +14,6 @@ dependencies {
     implementation libs.customer.persistence
     implementation libs.customer.core
     implementation libs.customer.restapi
-    implementation libs.istad.common.security
 
     implementation libs.spring.boot.starter.webmvc
     implementation libs.spring.boot.starter.oauth2.resource.server

@@ -1,3 +1,8 @@
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.web.reactive.function.client: TRACE
+    org.springframework.security.oauth2: TRACE
 server:
   port: 8080
 
@@ -35,8 +40,8 @@ spring:
             client-authentication-method: client_secret_basic
         provider:
           customer-client:
-            issuer-uri: http://localhost:9000
-            token-uri: http://localhost:9000/oauth2/token
+#            issuer-uri: http://localhost:9000
+            token-uri: http://127.0.0.1:9000/oauth2/token
   cloud:
     consul:
       discovery:
@@ -72,3 +77,4 @@ http:
       read-timeout:
         seconds: 10
       base-url: http://customer-service
+

@@ -294,6 +294,6 @@ public class AuthorizationServerConfig {
     // 10. Authorization Server Endpoint Configuration
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder().issuer("http://localhost:9000").build();
     }
 }

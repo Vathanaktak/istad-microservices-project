@@ -8,7 +8,9 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.support.OAuth2WebClientHttpServiceGroupConfigurer;
+import org.springframework.security.oauth2.client.web.client.ClientRegistrationIdProcessor;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
 
 @Configuration
 public class OAuth2ClientConfig {
@@ -21,7 +23,6 @@ public class OAuth2ClientConfig {
         OAuth2AuthorizedClientProvider authorizedClientProvider =
                 OAuth2AuthorizedClientProviderBuilder.builder()
                         .clientCredentials()
-                        .refreshToken()
                         .build();
 
         AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager =
@@ -33,8 +34,19 @@ public class OAuth2ClientConfig {
     }
 
     @Bean
-    public OAuth2WebClientHttpServiceGroupConfigurer oauth2WebClientHttpServiceGroupConfigurer(
+    public WebClientHttpServiceGroupConfigurer oauth2WebClientHttpServiceGroupConfigurer(
             OAuth2AuthorizedClientManager authorizedClientManager) {
-        return OAuth2WebClientHttpServiceGroupConfigurer.from(authorizedClientManager);
+        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Filter =
+                new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+        oauth2Filter.setDefaultOAuth2AuthorizedClient(true);
+
+        return groups -> {
+            groups.forEachProxyFactory((group, factory) ->
+                    factory.httpRequestValuesProcessor(ClientRegistrationIdProcessor.DEFAULT_INSTANCE)
+            );
+            groups.forEachClient((group, client) ->
+                    client.filter(oauth2Filter)
+            );
+        };
     }
 }

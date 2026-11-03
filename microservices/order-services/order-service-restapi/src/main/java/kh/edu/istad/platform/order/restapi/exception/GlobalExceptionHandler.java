@@ -12,13 +12,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DownStreamServiceException.class)
-    public ResponseEntity<?> handler() {
+    public ResponseEntity<?> handler(DownStreamServiceException ex) {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                         Map.of(
                                 "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "message", "Downstream service is down",
+                                "message", ex.getMessage() != null ? ex.getMessage() : "Downstream service error",
                                 "service", "customer-service"
                         )
                 );

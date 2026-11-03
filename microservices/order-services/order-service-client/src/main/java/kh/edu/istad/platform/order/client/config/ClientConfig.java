@@ -25,12 +25,11 @@ import org.springframework.web.service.registry.ImportHttpServices;
 public class ClientConfig {
 
     @Bean
-    public WebClientHttpServiceGroupConfigurer webClientHttpServiceGroupConfigurer() {
+    public WebClientHttpServiceGroupConfigurer clientConfigHttpServiceGroupConfigurer() {
         return groups -> {
             groups.filterByName("customer-service")
                     .forEachClient((group, clientBuilder) ->
                             clientBuilder
-                                    .baseUrl("http://customer-service")
                                     .defaultHeader("Content-Type", "application/json")
                                     .defaultStatusHandler(
                                             HttpStatusCode::isError,
@@ -43,7 +42,6 @@ public class ClientConfig {
             groups.filterByName("business-service")
                     .forEachClient((group, clientBuilder) ->
                             clientBuilder
-                                    .baseUrl("http://business-service")
                                     .defaultHeader("Content-Type", "application/json")
                                     .defaultStatusHandler(
                                             HttpStatusCode::isError,

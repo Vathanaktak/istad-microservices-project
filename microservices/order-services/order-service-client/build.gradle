@@ -9,7 +9,7 @@ ext {
 dependencies {
     api libs.order.app.service
 
-    implementation libs.spring.boot.starter.webclient
-    implementation libs.spring.cloud.starter.loadbalancer
+    api libs.spring.boot.starter.webclient
+    api libs.spring.cloud.starter.loadbalancer
     api libs.spring.boot.starter.oauth2.client
 }
