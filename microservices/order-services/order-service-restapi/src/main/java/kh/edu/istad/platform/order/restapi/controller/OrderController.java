@@ -25,80 +25,100 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+//
+//@RestController
+//@RequestMapping("/api/orders")
+//@RequiredArgsConstructor
+//@RefreshScope
+//public class OrderController {
+//
+////    private final InitiateOrderUseCase orderUseCase;
+//    private final CustomerServiceClient customerServiceClient;
+//    private final CustomerMapper customerMapper;
+//
+//
+//    @GetMapping("/customer")
+//    public Flux<GetOrderResponse> getCustomer(){
+//        return customerServiceClient.getCustomerName()
+//                .map(customerMapper::toResponse);
+//    }
+//    @GetMapping("/customer/query")
+//    public Flux<QueryCustomerResult> queryCustomer(){
+//        return customerServiceClient.queryCustomers();
+//    }
+////    @GetMapping
+////    public Flux<GetOrderResponse> findAllOrders(){
+////        // Implementation for finding all orders
+////        throw new DomainException("Not found");
+//////        return Flux.empty();
+////    }
+//
+////    @PostMapping
+////    public ResponseEntity<CreateOrderResponse> createOrderResponseResponseEntity(
+////            @Valid @RequestBody CreateOrderRequest request
+////            ){
+////
+////        CreateOrderCommand command = new CreateOrderCommand(
+////                request.customerId(),
+////                request.businessId(),
+////                request.price(),
+////                request.street(),
+////                request.postalCode(),
+////                request.city(),
+////                request.items().stream()
+////                        .map(i -> new CreateOrderItemCommand(
+////                                i.productName(),i.qty(),i.price()
+////                        ))
+////                        .collect(Collectors.toList())
+////
+////        );
+////        CreateOrderResult result = orderUseCase.createOrder(command);
+//
+////        return ResponseEntity.status(HttpStatus.CREATED)
+////                .body(
+////                        new CreateOrderResponse(result.orderTrackingId(),
+////                                result.orderStatus(),result.message())
+////                );
+////
+////    }
+//    private final ServicePropConfig servicePropConfig;
+//
+//    @Value("${global.version}")
+//    private String globalVersion;
+//
+//    @GetMapping("/consul/config")
+//    public Mono<Map<String, Object>> getConsul(){
+//        Map<String,Object> value = new HashMap<>();
+//        value.put("globalVersion",globalVersion);
+//        value.put("message",servicePropConfig.getMessage());
+//        value.put("Env",servicePropConfig.getEnv());
+//        value.put("version",servicePropConfig.getVersion());
+//        value.put("baseUrl",servicePropConfig.getBaseUrl());
+//        return Mono.just(value);
+//
+//    }
+//
+//
+//
+//}
+
 
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@RefreshScope
 public class OrderController {
-
-//    private final InitiateOrderUseCase orderUseCase;
     private final CustomerServiceClient customerServiceClient;
     private final CustomerMapper customerMapper;
 
-
     @GetMapping("/customer")
-    public Flux<GetOrderResponse> getCustomer(){
-        return customerServiceClient.getCustomerName()
-                .map(customerMapper::toResponse);
-    }
-    @GetMapping("/customer/query")
-    public Flux<QueryCustomerResult> queryCustomer(){
-        return customerServiceClient.queryCustomers();
-    }
-//    @GetMapping
-//    public Flux<GetOrderResponse> findAllOrders(){
-//        // Implementation for finding all orders
-//        throw new DomainException("Not found");
-////        return Flux.empty();
-//    }
-
-//    @PostMapping
-//    public ResponseEntity<CreateOrderResponse> createOrderResponseResponseEntity(
-//            @Valid @RequestBody CreateOrderRequest request
-//            ){
-//
-//        CreateOrderCommand command = new CreateOrderCommand(
-//                request.customerId(),
-//                request.businessId(),
-//                request.price(),
-//                request.street(),
-//                request.postalCode(),
-//                request.city(),
-//                request.items().stream()
-//                        .map(i -> new CreateOrderItemCommand(
-//                                i.productName(),i.qty(),i.price()
-//                        ))
-//                        .collect(Collectors.toList())
-//
-//        );
-//        CreateOrderResult result = orderUseCase.createOrder(command);
-
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(
-//                        new CreateOrderResponse(result.orderTrackingId(),
-//                                result.orderStatus(),result.message())
-//                );
-//
-//    }
-    private final ServicePropConfig servicePropConfig;
-
-    @Value("${global.version}")
-    private String globalVersion;
-
-    @GetMapping("/consul/config")
-    public Mono<Map<String, Object>> getConsul(){
-        Map<String,Object> value = new HashMap<>();
-        value.put("globalVersion",globalVersion);
-        value.put("message",servicePropConfig.getMessage());
-        value.put("Env",servicePropConfig.getEnv());
-        value.put("version",servicePropConfig.getVersion());
-        value.put("baseUrl",servicePropConfig.getBaseUrl());
-        return Mono.just(value);
-
+    public Flux<GetOrderResponse> getCustomers() {
+        return customerServiceClient.getCustomers().map(customerMapper::toResponse);
     }
 
-
-
+    @GetMapping("/customer/{id}")
+    public Mono<GetOrderResponse> getCustomer(@PathVariable UUID id) {
+        return customerServiceClient.getCustomerById(id).map(customerMapper::toResponse);
+    }
 }

@@ -31,7 +31,7 @@ spring:
       client:
         registration:
           customer-client:
-            client-id: customer-service
+            client-id: customer-client
             client-secret: customer-secret
             authorization-grant-type: client_credentials
             scope:
