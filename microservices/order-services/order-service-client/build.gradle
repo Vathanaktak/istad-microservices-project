@@ -6,6 +6,10 @@ ext {
     springCloudVersion = "2025.1.4"
 }
 
+bootJar {
+    enabled = false
+}
+
 dependencies {
     api libs.order.app.service
 

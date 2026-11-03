@@ -1,5 +1,6 @@
 package kh.edu.istad.platform.order.client.httpClient;
 
+import kh.edu.istad.platform.order.domain.dto.GetCustomerResult;
 import kh.edu.istad.platform.order.domain.dto.QueryCustomerResult;
 import org.springframework.security.oauth2.client.annotation.ClientRegistrationId;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,9 @@ import reactor.core.publisher.Mono;
 @HttpExchange("api/customers")
 @ClientRegistrationId("customer-client")
 public interface CustomerServiceClient {
+
+    @GetExchange
+    Flux<GetCustomerResult> getCustomers();
 
     @GetExchange
     Flux<QueryCustomerResult> getCustomerName();

@@ -56,6 +56,12 @@ spring:
         watch:
           enabled: true
         enabled: true
+  http:
+    serviceclient:
+      customer-service:
+        base-url: http://customer-service
+      business-service:
+        base-url: http://business-service
   r2dbc:
     url: r2dbc:postgresql://localhost:9543/db_order
     username: iteuser
@@ -68,13 +74,3 @@ spring:
     url: jdbc:postgresql://localhost:9543/db_order
     driver-class-name: org.postgresql.Driver
     change-log: classpath:/db/changelog/db.changelog-master.yaml
-
-http:
-  serviceclient:
-    customer-service:
-      connect-timeout:
-        seconds: 5
-      read-timeout:
-        seconds: 10
-      base-url: http://customer-service
-
