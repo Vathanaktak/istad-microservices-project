@@ -2,6 +2,8 @@ server:
   port: 9090
 
 spring:
+  application:
+    name: business-service
   mongodb:
     uri: mongodb://mongod:mongod@localhost:2026/db_customer?authSource=admin
     representation:
@@ -10,3 +12,20 @@ spring:
     mongodb:
       representation:
         uuid: standard
+  profiles:
+    active: dev
+  config:
+    import:
+      - "optional:consul:"
+  cloud:
+    consul:
+      discovery:
+        health-check-url: http://host.docker.internal:${server.port}/actuator/health
+        service-name: business-service
+        instance-id: ${spring.application.name}-${random.value}
+        prefer-ip-address: true
+#      config:
+#        format: yaml
+#        watch:
+#          enabled: true
+#        enabled: true

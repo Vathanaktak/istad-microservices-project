@@ -50,6 +50,11 @@
                   <project path="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservices/gateway-server" name="gateway-server">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservices/gateway-server" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-services" />
@@ -105,6 +110,7 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-message" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
+            <option value="$PROJECT_DIR$/microservices/gateway-server" />
             <option value="$PROJECT_DIR$/microservices/order-services" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-client" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain" />
@@ -128,6 +134,26 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/istad-common/istad-common-webflux" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/microservices/gateway-server" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/microservices/gateway-server" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
