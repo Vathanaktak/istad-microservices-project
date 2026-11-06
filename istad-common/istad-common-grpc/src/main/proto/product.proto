@@ -4,7 +4,8 @@ package kh.edu.istad.product.grpc;
 
 option java_multiple_files = true;
 option java_package = "kh.edu.istad.product.grpc";
-option java_outer_classname = "ProductProto"; // ឈ្មោះ Class កណ្តាលដែលផ្ទុកនូវ Metadata និង Schema Definitions នៃ Proto ទាំងមូល។
+option java_outer_classname = "ProductProto";
+option go_package = "kh.edu.istad/platform/product/grpc;productgrpc";
 
 service ProductGrpcService {
   rpc GetProductById (ProductRequest) returns (ProductResponse);

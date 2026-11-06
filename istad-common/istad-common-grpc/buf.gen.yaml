@@ -1,0 +1,36 @@
+version: v2
+
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: kh.edu.istad/gen/go
+
+plugins:
+  # Java Protobuf
+  - remote: buf.build/protocolbuffers/java
+    out: gen/java
+
+  # Java gRPC
+  - remote: buf.build/grpc/java
+    out: gen/java
+
+  # Go Protobuf
+  - remote: buf.build/protocolbuffers/go
+    out: gen/go
+    opt:
+      - paths=source_relative
+
+  # Go gRPC
+  - remote: buf.build/grpc/go
+    out: gen/go
+    opt:
+      - paths=source_relative
+
+  # Python Protobuf
+  - remote: buf.build/protocolbuffers/python
+    out: gen/python
+
+  # Python gRPC
+  - remote: buf.build/grpc/python
+    out: gen/python
