@@ -16,6 +16,7 @@
                 <projects>
                   <project path="$PROJECT_DIR$/istad-common" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-domain" />
+                  <project path="$PROJECT_DIR$/istad-common/istad-common-grpc" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-restapi" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-swagger" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-webflux" />
@@ -85,6 +86,11 @@
                   <project path="$PROJECT_DIR$/microservices/payment-service/payment-service-restapi" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservices/product-service" name="product-service">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservices/product-service" />
+                </projects>
+              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
@@ -95,6 +101,7 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/istad-common" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-domain" />
+            <option value="$PROJECT_DIR$/istad-common/istad-common-grpc" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-restapi" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-swagger" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-webflux" />
@@ -134,6 +141,7 @@
             <option value="$PROJECT_DIR$/microservices/payment-service/payment-service-message" />
             <option value="$PROJECT_DIR$/microservices/payment-service/payment-service-persistence" />
             <option value="$PROJECT_DIR$/microservices/payment-service/payment-service-restapi" />
+            <option value="$PROJECT_DIR$/microservices/product-service" />
           </set>
         </option>
         <option name="myGradleHome" value="" />

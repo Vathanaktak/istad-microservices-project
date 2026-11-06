@@ -5,6 +5,10 @@
     dependency-managnment-plugin = "1.1.7"
     swagger-plugin = "3.2.0"
     junit-bom = "6.0.0"
+    grpc = "1.68.1"
+    protobuf = "3.25.5"
+    protobufPlugin = "0.9.4"
+    grpcSpringBootStarter = "3.1.0.RELEASE"
 
     [libraries]
 
@@ -19,12 +23,22 @@
     spring-boot-starter-actuator = {module = "org.springframework.boot:spring-boot-starter-actuator"}
     spring-boot-starter-liquibase = {module = "org.springframework.boot:spring-boot-starter-liquibase"}
     spring-boot-starter-test = {module = "org.springframework.boot:spring-boot-starter-test"}
+    spring-boot-starter-test-webmvc = {module = "org.springframework.boot:spring-boot-starter-webmvc-test"}
     spring-boot-starter-data-mongodb-reactive = {module = "org.springframework.boot:spring-boot-starter-data-mongodb-reactive"}
     spring-boot-starter-data-jpa = {module = "org.springframework.boot:spring-boot-starter-data-jpa"}
     spring-boot-starter-validation = {module = "org.springframework.boot:spring-boot-starter-validation"}
     lombok = {module = "org.projectlombok:lombok"}
 
     springdoc-openapi-stater-webmvc-ui = {module = "org.springdoc:springdoc-openapi-starter-webmvc-ui",version.ref="swagger-plugin"}
+
+    # gRPC & Protobuf
+    grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+    grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+    grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
+    grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
+    protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+    grpc-server-spring-boot-starter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
+    grpc-client-spring-boot-starter = { module = "net.devh:grpc-client-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
 
     # Spring Cloud
     spring-cloud-starter-consul-discovery = {module = "org.springframework.cloud:spring-cloud-starter-consul-discovery"}
@@ -47,6 +61,7 @@
     istad-common-swagger = {module = "kh.edu.istad:istad-common-swagger"}
     istad-common-domain = {module = "kh.edu.istad:istad-common-domain"}
     istad-common-webflux = {module = "kh.edu.istad:istad-common-webflux"}
+    istad-common-grpc = {module = "kh.edu.istad:istad-common-grpc"}
     business-domain-core = {module = "kh.edu.istad:business-domain-core"}
 
     # Order Service Modules (existing aliases kept for backwards compatibility)
@@ -88,9 +103,14 @@
         "spring-boot-gradle-plugin",
         "dependency-managnment-plugin"
     ]
+    grpc-common = [
+        "grpc-protobuf",
+        "grpc-stub"
+    ]
 
     [plugins]
 
     java-plugin-conventions = { id = "java-common-conventions"}
     spring-plugin-conventions = {id = "sping-common-conventions"}
     spring-boot-plugin-conventions = {id = "spring-boot-commont-conventions"}
+    protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

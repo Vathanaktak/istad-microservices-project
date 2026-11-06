@@ -12,7 +12,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   liquibase:
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
@@ -22,3 +22,8 @@ spring:
 
 server:
   port: 9000
+
+
+logging:
+  level:
+    org.springframework.security: TRACE

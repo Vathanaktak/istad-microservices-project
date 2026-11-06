@@ -1,0 +1,26 @@
+plugins {
+    id 'spring-boot-common-conventions'
+}
+
+dependencies {
+    implementation libs.spring.boot.starter.webmvc
+
+    // Lombok
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+
+    // gRPC Spring Boot Starters
+    implementation libs.grpc.server.spring.boot.starter
+    implementation libs.grpc.services // Enables reflection
+    implementation libs.grpc.client.spring.boot.starter
+
+    // Core gRPC & Protobuf libraries
+    implementation 'kh.edu.istad:istad-common-grpc'
+
+    // Spring Data JPA & PostgreSQL
+    implementation libs.spring.boot.starter.data.jpa
+    runtimeOnly libs.postgresql
+
+    testImplementation libs.spring.boot.starter.test.webmvc
+    testImplementation libs.grpc.testing
+}

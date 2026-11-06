@@ -6,7 +6,9 @@ import kh.edu.istad.platform.order.domain.dto.CreateOrderCommand;
 import kh.edu.istad.platform.order.domain.dto.CreateOrderItemCommand;
 import kh.edu.istad.platform.order.domain.dto.CreateOrderResult;
 import kh.edu.istad.platform.order.domain.dto.QueryCustomerResult;
+import kh.edu.istad.platform.order.domain.dto.client.QueryProductResult;
 import kh.edu.istad.platform.order.domain.port.out.client.CustomerServiceClient;
+import kh.edu.istad.platform.order.domain.port.out.client.ProductServiceClient;
 import kh.edu.istad.platform.order.domain.usecase.InitiateOrderUseCase;
 import kh.edu.istad.platform.order.restapi.config.ServicePropConfig;
 import kh.edu.istad.platform.order.restapi.dto.CreateOrderRequest;
@@ -35,18 +37,26 @@ public class OrderController {
 
 //    private final InitiateOrderUseCase orderUseCase;
     private final CustomerServiceClient customerServiceClient;
+    private final ProductServiceClient productServiceClient;
     private final CustomerMapper customerMapper;
-
 
     @GetMapping("/customer")
     public Flux<GetOrderResponse> getCustomer(){
         return customerServiceClient.getCustomerName()
                 .map(customerMapper::toResponse);
     }
+
     @GetMapping("/customer/query")
     public Flux<QueryCustomerResult> queryCustomer(){
         return customerServiceClient.queryCustomers();
     }
+
+    // gRPC call to product-service
+    @GetMapping("/products/{id}")
+    public Mono<QueryProductResult> getProductById(@PathVariable String id) {
+        return productServiceClient.getProductById(id);
+    }
+
 //    @GetMapping
 //    public Flux<GetOrderResponse> findAllOrders(){
 //        // Implementation for finding all orders
@@ -96,9 +106,6 @@ public class OrderController {
         value.put("version",servicePropConfig.getVersion());
         value.put("baseUrl",servicePropConfig.getBaseUrl());
         return Mono.just(value);
-
     }
-
-
 
 }
