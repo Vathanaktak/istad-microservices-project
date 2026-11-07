@@ -6,9 +6,9 @@ spring:
   application:
     name: iam-service
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/iam}
-    username: ${DB_USERNAME:iam}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL:jdbc:postgresql://localhost:9543/db_iam}
+    username: ${DB_USERNAME:iteuser}
+    password: ${DB_PASSWORD:qwerqwer}
   jpa:
     open-in-view: false
     hibernate:
@@ -55,11 +55,11 @@ iam:
     public-key: ${IAM_JWT_PUBLIC_KEY:}       # X.509 base64
   dcr:
     client-id: ${IAM_DCR_CLIENT_ID:iam-dcr-initial}
-    client-secret: ${IAM_DCR_CLIENT_SECRET}
+    client-secret: ${IAM_DCR_CLIENT_SECRET:change-me-too}
   telegram:
     bot-token: ${TELEGRAM_BOT_TOKEN:}
     bot-username: ${TELEGRAM_BOT_USERNAME:}
   admin:
-    username: ${IAM_ADMIN_USERNAME:}
-    email: ${IAM_ADMIN_EMAIL:}
-    password: ${IAM_ADMIN_PASSWORD:}
+    username: ${IAM_ADMIN_USERNAME:admin}
+    email: ${IAM_ADMIN_EMAIL:admin@istad.co}
+    password: ${IAM_ADMIN_PASSWORD:Adm1n!Pass2026}

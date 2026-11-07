@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-boot-common-conventions'
+    id 'iam-spring-boot-common-conventions'
 }
 
 java {
@@ -19,9 +19,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-    implementation libs.spring.boot.starter.webmvc
-    implementation libs.spring.boot.starter.liquibase
-    runtimeOnly libs.postgresql
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation platform('org.testcontainers:testcontainers-bom:1.21.3')

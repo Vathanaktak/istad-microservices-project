@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 public class User extends Auditable {
     private String username;
     private String email;

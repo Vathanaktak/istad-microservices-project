@@ -1,5 +1,11 @@
 plugins {
-    id 'sping-common-conventions'
+    id 'iam-spring-common-conventions'
+    id 'gg.jte.gradle' version '3.2.1'
+}
+
+jte {
+    sourceDirectory = file("src/main/jte").toPath()
+    generate()
 }
 
 dependencies {

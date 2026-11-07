@@ -1,5 +1,5 @@
 plugins {
-    id 'sping-common-conventions'
+    id 'iam-spring-common-conventions'
 }
 
 dependencies {

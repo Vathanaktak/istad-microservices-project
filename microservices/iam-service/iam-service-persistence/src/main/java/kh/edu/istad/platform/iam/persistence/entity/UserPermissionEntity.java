@@ -1,5 +1,5 @@
 package kh.edu.istad.platform.iam.persistence.entity;
-import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.*;
+import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.SQLRestriction;
 @Entity @Table(name = "user_permissions") @Getter @Setter
 public class UserPermissionEntity extends AssignmentEntity {
     @Column(name = "user_id", nullable = false) private Long userId;

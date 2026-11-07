@@ -1,9 +1,5 @@
 plugins {
-    id 'spring-boot-common-conventions'
-}
-
-tasks.named('bootJar') {
-    enabled = false
+    id 'base'
 }
 
 allprojects {
@@ -24,6 +20,20 @@ allprojects {
 }
 
 subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.springframework.boot') {
+                details.useVersion '3.4.1'
+            }
+            if (details.requested.group.startsWith('org.springframework.security')) {
+                details.useVersion '6.4.2'
+            }
+            if (details.requested.group == 'org.springframework') {
+                details.useVersion '6.2.1'
+            }
+        }
+    }
+
     afterEvaluate {
         plugins.withType(JavaPlugin).configureEach {
             java {
@@ -34,9 +44,11 @@ subprojects {
         }
     }
 
-    dependencyManagement {
-        imports {
-            mavenBom 'org.springframework.boot:spring-boot-dependencies:3.4.1'
+    pluginManager.withPlugin('io.spring.dependency-management') {
+        dependencyManagement {
+            imports {
+                mavenBom 'org.springframework.boot:spring-boot-dependencies:3.4.1'
+            }
         }
     }
 

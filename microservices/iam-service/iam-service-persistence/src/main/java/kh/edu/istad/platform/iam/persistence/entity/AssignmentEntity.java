@@ -1,5 +1,5 @@
 package kh.edu.istad.platform.iam.persistence.entity;
-import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.*;
+import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.SQLRestriction;
 @MappedSuperclass @Getter @Setter
 public abstract class AssignmentEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;

@@ -11,12 +11,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.stereotype.Component;
 
 /** Seeds the client whose client_credentials token (scope client.create) is the DCR initial access token. */
-@Component @RequiredArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class ClientSeeder implements ApplicationRunner {
     private final RegisteredClientRepository clients;
     private final PasswordEncoder encoder;
     @Value("${iam.dcr.client-id:iam-dcr-initial}") private String clientId;
-    @Value("${iam.dcr.client-secret}") private String clientSecret;
+    @Value("${iam.dcr.client-secret:change-me-too}") private String clientSecret;
 
     @Override
     public void run(ApplicationArguments args) {

@@ -1,5 +1,5 @@
 package kh.edu.istad.platform.iam.persistence.entity;
-import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.*;
+import jakarta.persistence.*; import lombok.*; import java.time.*; import java.util.*; import org.hibernate.annotations.SQLRestriction; import org.hibernate.annotations.JdbcTypeCode;
 @Entity @Table(name = "users") @SQLRestriction("is_deleted = false")
 @Getter @Setter
 public class UserEntity extends BaseEntity {
