@@ -1,0 +1,1234 @@
+{
+  "info": {
+    "name": "ISTAD IAM Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Run 'Token (authorization_code)' (or paste a token) to set {{token}}. Admin APIs need the ADMIN role."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:9000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userUuid",
+      "value": ""
+    },
+    {
+      "key": "roleUuid",
+      "value": ""
+    },
+    {
+      "key": "permissionUuid",
+      "value": ""
+    },
+    {
+      "key": "identityUuid",
+      "value": ""
+    },
+    {
+      "key": "dcrClientSecret",
+      "value": ""
+    },
+    {
+      "key": "initialAccessToken",
+      "value": ""
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    },
+    {
+      "key": "clientSecret",
+      "value": ""
+    },
+    {
+      "key": "registrationAccessToken",
+      "value": ""
+    },
+    {
+      "key": "codeVerifier",
+      "value": ""
+    },
+    {
+      "key": "codeChallenge",
+      "value": ""
+    },
+    {
+      "key": "authCode",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "OAuth2 / OIDC / DCR",
+      "item": [
+        {
+          "name": "Discovery",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/.well-known/openid-configuration",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Initial access token (client_credentials, scope client.create)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "iam-dcr-initial"
+                },
+                {
+                  "key": "password",
+                  "value": "{{dcrClientSecret}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials"
+                },
+                {
+                  "key": "scope",
+                  "value": "client.create"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/oauth2/token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('initialAccessToken', pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dynamic Client Registration",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{initialAccessToken}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"ISTAD E-Commerce Web\",\n  \"redirect_uris\": [\n    \"http://localhost:8081/login/oauth2/code/iam\"\n  ],\n  \"grant_types\": [\n    \"authorization_code\",\n    \"refresh_token\"\n  ],\n  \"response_types\": [\n    \"code\"\n  ],\n  \"scope\": \"openid profile email\",\n  \"token_endpoint_auth_method\": \"client_secret_basic\"\n}"
+            },
+            "url": "{{baseUrl}}/connect/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const j=pm.response.json(); pm.collectionVariables.set('clientId', j.client_id); pm.collectionVariables.set('clientSecret', j.client_secret); pm.collectionVariables.set('registrationAccessToken', j.registration_access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read registered client",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{registrationAccessToken}}"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/connect/register?client_id={{clientId}}"
+          }
+        },
+        {
+          "name": "Authorize (open in browser)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/oauth2/authorize?response_type=code&client_id={{clientId}}&scope=openid profile email&redirect_uri=http://localhost:8081/login/oauth2/code/iam&code_challenge={{codeChallenge}}&code_challenge_method=S256"
+          }
+        },
+        {
+          "name": "Token (authorization_code)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "authorization_code"
+                },
+                {
+                  "key": "code",
+                  "value": "{{authCode}}"
+                },
+                {
+                  "key": "redirect_uri",
+                  "value": "http://localhost:8081/login/oauth2/code/iam"
+                },
+                {
+                  "key": "code_verifier",
+                  "value": "{{codeVerifier}}"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/oauth2/token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('token', pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "UserInfo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/userinfo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register (public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sokdara\",\n  \"email\": \"dara.sok@istad.co\",\n  \"password\": \"Str0ng!Pass2026\",\n  \"confirmPassword\": \"Str0ng!Pass2026\",\n  \"givenName\": \"Dara\",\n  \"familyName\": \"Sok\",\n  \"locale\": \"km\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sokdara2\",\n  \"email\": \"dara2@istad.co\",\n  \"password\": \"Str0ng!Pass2026\",\n  \"givenName\": \"Dara\",\n  \"familyName\": \"Sok\",\n  \"gender\": \"male\",\n  \"birthdate\": \"2003-05-20\",\n  \"phoneNumber\": \"+85512345678\",\n  \"zoneinfo\": \"Asia/Phnom_Penh\",\n  \"locale\": \"km\",\n  \"address\": {\n    \"streetAddress\": \"No. 24, St. 562\",\n    \"locality\": \"Toul Kork\",\n    \"region\": \"Phnom Penh\",\n    \"postalCode\": \"120408\",\n    \"country\": \"KH\"\n  },\n  \"roleUuids\": [\n    \"{{roleUuid}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Update user profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Dara\",\n  \"nickname\": \"Dara\",\n  \"phoneNumber\": \"+85512345678\",\n  \"locale\": \"en\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Enable user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/enable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "enable"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Disable user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/disable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "disable"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Lock user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/lock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "lock"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Unlock user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/unlock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "unlock"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Reset user password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "password"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"N3w!Pass2026\",\n  \"confirmPassword\": \"N3w!Pass2026\"\n}"
+            }
+          }
+        },
+        {
+          "name": "User authorities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/authorities",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "authorities"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Assign roles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "roles"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleUuids\": [\n    \"{{roleUuid}}\"\n  ],\n  \"expiresAt\": \"2026-12-31T23:59:59Z\",\n  \"reason\": \"Temporary admin\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Revoke role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/roles/{{roleUuid}}?reason=done",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "roles",
+                "{{roleUuid}}"
+              ],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "done"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Grant permissions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/permissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "permissions"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionUuids\": [\n    \"{{permissionUuid}}\"\n  ],\n  \"effect\": \"GRANT\",\n  \"reason\": \"Needs to read reports\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Deny permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/permissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "permissions"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionUuids\": [\n    \"{{permissionUuid}}\"\n  ],\n  \"effect\": \"DENY\",\n  \"reason\": \"Restricted\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Revoke permission",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/permissions/{{permissionUuid}}?reason=done",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "permissions",
+                "{{permissionUuid}}"
+              ],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "done"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List user identities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/identities",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "identities"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Unlink user identity",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userUuid}}/identities/{{identityUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userUuid}}",
+                "identities",
+                "{{identityUuid}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Me",
+      "item": [
+        {
+          "name": "Get me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "me"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Update me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "me"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Dara\",\n  \"nickname\": \"Dara\",\n  \"locale\": \"en\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Change my password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/me/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "me",
+                "password"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Str0ng!Pass2026\",\n  \"newPassword\": \"N3w!Pass2026\",\n  \"confirmPassword\": \"N3w!Pass2026\"\n}"
+            }
+          }
+        },
+        {
+          "name": "My identities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/me/identities",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "me",
+                "identities"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Unlink my identity",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/me/identities/{{identityUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "me",
+                "identities",
+                "{{identityUuid}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Create role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CONTENT_MANAGER\",\n  \"description\": \"Manages course content\",\n  \"permissionUuids\": [\n    \"{{permissionUuid}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get role",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Update role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Activate role",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}",
+                "activate"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Deactivate role",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}",
+                "deactivate"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Assign permissions to role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}/permissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}",
+                "permissions"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionUuids\": [\n    \"{{permissionUuid}}\"\n  ],\n  \"reason\": \"Initial\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Revoke permission from role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleUuid}}/permissions/{{permissionUuid}}?reason=cleanup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "{{roleUuid}}",
+                "permissions",
+                "{{permissionUuid}}"
+              ],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "cleanup"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permissions",
+      "item": [
+        {
+          "name": "Create permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"course\",\n  \"action\": \"publish\",\n  \"description\": \"Publish a course\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions?page=0&size=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get permission",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions/{{permissionUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions",
+                "{{permissionUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Update permission",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions/{{permissionUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions",
+                "{{permissionUuid}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete permission",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions/{{permissionUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions",
+                "{{permissionUuid}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Activate permission",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions/{{permissionUuid}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions",
+                "{{permissionUuid}}",
+                "activate"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Deactivate permission",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions/{{permissionUuid}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "permissions",
+                "{{permissionUuid}}",
+                "deactivate"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

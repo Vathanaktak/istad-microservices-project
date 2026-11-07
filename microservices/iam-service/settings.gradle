@@ -8,6 +8,7 @@ pluginManagement {
 }
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     versionCatalogs {
@@ -17,3 +18,10 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "iam-service"
+include 'iam-domain:iam-domain-core'
+include 'iam-domain:iam-application-service'
+include 'iam-service-persistence'
+include 'iam-service-main'
+include 'iam-service-restapi'
+include 'iam-service-web'
+include 'iam-service-infrastructure'

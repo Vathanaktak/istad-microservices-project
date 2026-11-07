@@ -3,4 +3,3 @@ includeBuild 'istad-common'
 includeBuild 'microservices'
 includeBuild 'build-logic'
 
-

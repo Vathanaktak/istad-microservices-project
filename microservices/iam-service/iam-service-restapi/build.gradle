@@ -1,0 +1,13 @@
+plugins {
+    id 'sping-common-conventions'
+}
+
+dependencies {
+    api project(':iam-domain:iam-application-service')
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.validation
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework:spring-tx'
+}

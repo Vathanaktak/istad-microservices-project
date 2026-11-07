@@ -1,22 +1,49 @@
 plugins {
-    id 'spring-cloud-common-conventions'
+    id 'spring-boot-common-conventions'
 }
 
+tasks.named('bootJar') {
+    enabled = false
+}
 
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    configurations.configureEach {
+        resolutionStrategy.dependencySubstitution {
+            substitute module('kh.edu.istad:iam-domain-core') using project(':iam-domain:iam-domain-core')
+            substitute module('kh.edu.istad:iam-application-service') using project(':iam-domain:iam-application-service')
+            substitute module('kh.edu.istad:iam-service-persistence') using project(':iam-service-persistence')
+            substitute module('kh.edu.istad:iam-service-infrastructure') using project(':iam-service-infrastructure')
+            substitute module('kh.edu.istad:iam-service-restapi') using project(':iam-service-restapi')
+            substitute module('kh.edu.istad:iam-service-web') using project(':iam-service-web')
+        }
+    }
+}
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
-    compileOnly 'org.mapstruct:mapstruct:1.6.3'
-    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    runtimeOnly 'org.postgresql:postgresql'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+subprojects {
+    afterEvaluate {
+        plugins.withType(JavaPlugin).configureEach {
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(21)
+                }
+            }
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.boot:spring-boot-dependencies:3.4.1'
+        }
+    }
+
+    plugins.withType(JavaPlugin).configureEach {
+        dependencies {
+            testImplementation 'org.springframework.boot:spring-boot-starter-test:3.4.1'
+            testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        }
+    }
 }

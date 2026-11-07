@@ -59,6 +59,14 @@
               <build path="$PROJECT_DIR$/microservices/iam-service" name="iam-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/iam-service" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-domain" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-application-service" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-domain-core" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-infrastructure" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-main" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-persistence" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-restapi" />
+                  <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-web" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
@@ -124,6 +132,14 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservices/gateway-server" />
             <option value="$PROJECT_DIR$/microservices/iam-service" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-application-service" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-domain-core" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-service-infrastructure" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-service-main" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-service-persistence" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-service-restapi" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/iam-service-web" />
             <option value="$PROJECT_DIR$/microservices/order-services" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-client" />
             <option value="$PROJECT_DIR$/microservices/order-services/order-service-domain" />

@@ -1,0 +1,9 @@
+plugins {
+    id 'sping-common-conventions'
+}
+
+dependencies {
+    api project(':iam-domain:iam-domain-core')
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-tx'
+}

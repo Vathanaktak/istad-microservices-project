@@ -97,6 +97,14 @@
     payment-persistence = {module = "kh.edu.istad:payment-service-persistence"}
     payment-restapi = {module = "kh.edu.istad:payment-service-restapi"}
 
+    # IAM Service Modules
+    iam-core = {module = "kh.edu.istad:iam-domain-core"}
+    iam-app-service = {module = "kh.edu.istad:iam-application-service"}
+    iam-persistence = {module = "kh.edu.istad:iam-service-persistence"}
+    iam-infrastructure = {module = "kh.edu.istad:iam-service-infrastructure"}
+    iam-restapi = {module = "kh.edu.istad:iam-service-restapi"}
+    iam-web = {module = "kh.edu.istad:iam-service-web"}
+
     [bundles]
 
     gradle-dependency-managnment = [
