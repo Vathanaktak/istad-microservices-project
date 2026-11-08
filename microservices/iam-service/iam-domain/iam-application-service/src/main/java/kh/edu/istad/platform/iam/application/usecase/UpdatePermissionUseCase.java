@@ -7,11 +7,14 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 @Service @RequiredArgsConstructor @Transactional
 public class UpdatePermissionUseCase {
     private final PermissionRepository permissions;
+    private final IamDomainService iamDomainService;
 
     public PermissionResult execute(UpdatePermissionCommand c) {
         Permission p = permissions.findByUuid(c.permissionUuid()).orElseThrow(() -> NotFoundException.of("Permission", c.permissionUuid()));
-        p.assertMutable();
-        if (c.description() != null) p.setDescription(c.description());
+
+        // Domain service validates (assertMutable) and applies update
+        iamDomainService.updatePermission(p, p.getResource(), p.getAction(), c.description());
+
         return RoleMapper.toPermission(permissions.save(p));
     }
 }

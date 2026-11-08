@@ -4,8 +4,15 @@ import kh.edu.istad.platform.iam.domain.model.*; import kh.edu.istad.platform.ia
 import java.time.*; import java.util.*; import java.util.stream.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.*; import org.springframework.transaction.annotation.Transactional;
-@Service @RequiredArgsConstructor @Transactional(readOnly = true)
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ListPermissionsUseCase {
     private final PermissionRepository permissions;
-    public PageResult<PermissionResult> execute(PermissionFilterQuery q) { return permissions.search(q).map(RoleMapper::toPermission); }
+    public PageResult<PermissionResult> execute(
+            PermissionFilterQuery q) {
+        return permissions
+                .search(q)
+                .map(RoleMapper::toPermission);
+    }
 }

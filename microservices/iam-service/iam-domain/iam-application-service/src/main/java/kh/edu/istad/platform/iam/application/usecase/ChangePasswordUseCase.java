@@ -9,13 +9,17 @@ public class ChangePasswordUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
     private final PasswordHasher hasher;
+    private final IamDomainService iamDomainService;
 
     public void execute(ChangePasswordCommand c) {
         User u = assembler.require(c.userUuid());
         // Social-only users (no password yet) may set one without a current password.
         if (u.hasPassword() && (c.currentPassword() == null || !hasher.matches(c.currentPassword(), u.getPasswordHash())))
             throw new BusinessRuleException("wrong-password", "Current password is incorrect");
-        u.changePassword(hasher.hash(c.newPassword()));
+
+        // Domain service validates (hash not blank) and changes the password
+        iamDomainService.changeUserPassword(u, hasher.hash(c.newPassword()));
+
         users.save(u);
     }
 }

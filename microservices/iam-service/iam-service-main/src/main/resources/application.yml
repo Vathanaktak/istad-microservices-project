@@ -38,6 +38,7 @@ spring:
             client-id: ${GITHUB_CLIENT_ID:disabled}
             client-secret: ${GITHUB_CLIENT_SECRET:disabled}
             scope: read:user,user:email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           facebook:
             client-id: ${FACEBOOK_CLIENT_ID:disabled}
             client-secret: ${FACEBOOK_CLIENT_SECRET:disabled}

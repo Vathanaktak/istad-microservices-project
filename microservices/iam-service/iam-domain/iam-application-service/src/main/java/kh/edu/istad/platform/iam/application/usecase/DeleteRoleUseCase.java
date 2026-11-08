@@ -9,12 +9,14 @@ public class DeleteRoleUseCase {
     private final RoleAssembler assembler;
     private final RoleRepository roles;
     private final CurrentActorProvider actor;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID roleUuid) {
         Role r = assembler.require(roleUuid);
-        r.assertMutable();
-        r.softDelete(actor.currentActor());
-        r.setActive(false);
+
+        // Domain service validates (assertMutable + not already deleted) and soft-deletes
+        iamDomainService.deleteRole(r, actor.currentActor());
+
         roles.save(r);
     }
 }

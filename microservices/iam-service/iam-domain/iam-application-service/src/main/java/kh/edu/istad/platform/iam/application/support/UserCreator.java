@@ -4,12 +4,14 @@ import kh.edu.istad.platform.iam.domain.model.*; import kh.edu.istad.platform.ia
 import java.time.*; import java.util.*; import java.util.stream.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.*; import org.springframework.transaction.annotation.Transactional;
-@Component @RequiredArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class UserCreator {
     private final UserRepository users;
     private final RoleRepository roles;
     private final PasswordHasher hasher;
     private final UserRoleAssigner roleAssigner;
+    private final IamDomainService iamDomainService;
 
     public User create(NewUser n) {
         String username = n.username().trim();
@@ -25,11 +27,15 @@ public class UserCreator {
         u.setPhoneNumber(n.phoneNumber()); u.setZoneinfo(n.zoneinfo()); u.setPictureUrl(n.pictureUrl());
         u.setLocale(n.locale() == null ? "en" : n.locale());
         if (n.address() != null) {
-            u.setAddressStreetAddress(n.address().streetAddress()); u.setAddressLocality(n.address().locality());
-            u.setAddressRegion(n.address().region()); u.setAddressPostalCode(n.address().postalCode());
-            u.setAddressCountry(n.address().country());
+            u.setAddress(new kh.edu.istad.platform.iam.domain.valueobject.Address(
+                n.address().streetAddress(), n.address().locality(),
+                n.address().region(), n.address().postalCode(), n.address().country()));
         }
-        if (n.rawPassword() != null) u.changePassword(hasher.hash(n.rawPassword()));
+        if (n.rawPassword() != null) u.setPasswordHash(hasher.hash(n.rawPassword()));
+
+        // Domain service validates business rules and returns the creation event
+        iamDomainService.createUser(u);
+
         u = users.save(u);
 
         if (n.roleUuids() != null && !n.roleUuids().isEmpty()) {

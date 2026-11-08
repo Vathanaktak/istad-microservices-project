@@ -9,12 +9,17 @@ public class CreateRoleUseCase {
     private final RoleRepository roles;
     private final RoleAssembler assembler;
     private final RolePermissionAssigner assigner;
+    private final IamDomainService iamDomainService;
 
     public RoleResult execute(CreateRoleCommand c) {
         String name = c.name().trim().toUpperCase(Locale.ROOT);
         if (roles.existsByName(name)) throw new ConflictException("role-name-taken", "Role already exists: " + name);
         Role r = new Role();
         r.setName(name); r.setDescription(c.description());
+
+        // Domain service validates business rules and returns the creation event
+        iamDomainService.createRole(r);
+
         r = roles.save(r);
         if (c.permissionUuids() != null && !c.permissionUuids().isEmpty())
             assigner.assign(r, c.permissionUuids(), null, "Initial assignment");

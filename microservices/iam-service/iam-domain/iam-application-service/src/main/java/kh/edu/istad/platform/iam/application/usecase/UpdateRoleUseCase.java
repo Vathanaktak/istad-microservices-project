@@ -8,18 +8,20 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class UpdateRoleUseCase {
     private final RoleAssembler assembler;
     private final RoleRepository roles;
+    private final IamDomainService iamDomainService;
 
     public RoleResult execute(UpdateRoleCommand c) {
         Role r = assembler.require(c.roleUuid());
-        r.assertMutable();
         if (c.name() != null) {
             String name = c.name().trim().toUpperCase(Locale.ROOT);
             if (!name.equals(r.getName())) {
                 if (roles.existsByName(name)) throw new ConflictException("role-name-taken", "Role already exists: " + name);
-                r.setName(name);
             }
         }
-        if (c.description() != null) r.setDescription(c.description());
+
+        // Domain service validates (assertMutable) and applies update
+        iamDomainService.updateRole(r, c.name(), c.description());
+
         return assembler.result(roles.save(r));
     }
 }

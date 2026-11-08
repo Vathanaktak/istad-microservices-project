@@ -9,11 +9,14 @@ public class DeleteUserUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
     private final CurrentActorProvider actor;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID userUuid) {
         User u = assembler.require(userUuid);
-        u.softDelete(actor.currentActor());
-        u.setEnabled(false);
+
+        // Domain service validates (not already deleted) and soft-deletes
+        iamDomainService.deleteUser(u, actor.currentActor());
+
         users.save(u);
     }
 }

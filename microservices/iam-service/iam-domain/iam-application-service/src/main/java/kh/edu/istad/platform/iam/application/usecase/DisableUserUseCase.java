@@ -8,10 +8,14 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class DisableUserUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID userUuid) {
         User u = assembler.require(userUuid);
-        u.setEnabled(false);
+
+        // Domain service validates (not already disabled) and disables the account
+        iamDomainService.disableUser(u);
+
         users.save(u);
     }
 }

@@ -8,10 +8,14 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class UnlockUserUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID userUuid) {
         User u = assembler.require(userUuid);
-        u.unlock();
+
+        // Domain service validates (not already unlocked) and unlocks the account
+        iamDomainService.unlockUser(u);
+
         users.save(u);
     }
 }

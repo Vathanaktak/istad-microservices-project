@@ -8,10 +8,14 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class EnableUserUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID userUuid) {
         User u = assembler.require(userUuid);
-        u.setEnabled(true);
+
+        // Domain service validates (not already enabled) and enables the account
+        iamDomainService.enableUser(u);
+
         users.save(u);
     }
 }

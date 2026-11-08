@@ -9,11 +9,19 @@ public class ResetUserPasswordUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
     private final PasswordHasher hasher;
+    private final IamDomainService iamDomainService;
 
     public void execute(ResetUserPasswordCommand c) {
         User u = assembler.require(c.userUuid());
-        u.changePassword(hasher.hash(c.newPassword()));
-        u.unlock();
+
+        // Domain service validates and changes the password
+        iamDomainService.changeUserPassword(u, hasher.hash(c.newPassword()));
+
+        // If the account was locked, also unlock it
+        if (!u.isAccountNonLocked()) {
+            iamDomainService.unlockUser(u);
+        }
+
         users.save(u);
     }
 }

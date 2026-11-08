@@ -8,12 +8,14 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class DeletePermissionUseCase {
     private final PermissionRepository permissions;
     private final CurrentActorProvider actor;
+    private final IamDomainService iamDomainService;
 
     public void execute(UUID permissionUuid) {
         Permission p = permissions.findByUuid(permissionUuid).orElseThrow(() -> NotFoundException.of("Permission", permissionUuid));
-        p.assertMutable();
-        p.softDelete(actor.currentActor());
-        p.setActive(false);
+
+        // Domain service validates (assertMutable + not already deleted) and soft-deletes
+        iamDomainService.deletePermission(p, actor.currentActor());
+
         permissions.save(p);
     }
 }
