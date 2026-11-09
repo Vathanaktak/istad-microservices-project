@@ -46,3 +46,7 @@ bin/
 
 ### Buf Generated Code ###
 gen/
+
+/microservices/iam-service/.env
+
+/microservices/iam-service/.env.example

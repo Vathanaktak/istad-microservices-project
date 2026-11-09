@@ -103,8 +103,8 @@ public class User extends Auditable {
         if (email == null || email.value() == null || email.value().isBlank()) {
             throw new BusinessRuleException("user-email-required", "Email must not be blank");
         }
-        if (passwordHash == null || passwordHash.isBlank()) {
-            throw new BusinessRuleException("user-password-required", "Password hash must not be blank");
+        if (passwordHash != null && passwordHash.isBlank()) {
+            throw new BusinessRuleException("user-password-blank", "Password hash must not be blank");
         }
     }
 
