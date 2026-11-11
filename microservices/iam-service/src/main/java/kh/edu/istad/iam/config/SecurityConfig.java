@@ -90,7 +90,12 @@ public class SecurityConfig {
                 )
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
-                .formLogin(Customizer.withDefaults());
+                .oauth2Login(Customizer.withDefaults())
+                .oauth2Client(Customizer.withDefaults())
+                .formLogin(config -> {
+                    config.loginPage("/login")
+                            .permitAll();
+                });
 
         return http.build();
     }

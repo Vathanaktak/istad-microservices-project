@@ -5,6 +5,23 @@ spring:
     oauth2:
       authorizationserver:
         issuer: http://localhost:9000
+      client:
+        registration:
+          github:
+            provider: github
+            client-name: Github
+            client-id:
+            client-secret:
+            redirect-uri: {"baseUrl/login/oauth2/code/{registrationId}"}
+          google:
+            client-id:
+            client-secret:
+            client-name: Google
+        provider:
+          google:
+            issuer-uri:
+          github:
+            issuer-uri:
   datasource:
     url: jdbc:postgresql://localhost:9543/db_oauth2
     username: iteuser
