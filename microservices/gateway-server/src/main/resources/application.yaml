@@ -9,6 +9,12 @@ spring:
     import:
       - "optional:consul:"
   cloud:
+    consul:
+      discovery:
+        health-check-url: http://host.docker.internal:${server.port}/actuator/health
+        service-name: gateway-server
+        instance-id: ${spring.application.name}-${random.value}
+        prefer-ip-address: true
     gateway:
       server:
         webflux:
@@ -36,17 +42,25 @@ spring:
               uri: http://localhost:3001
               predicates:
                 - Path=/**
-#              filters:
-#                - RewritePath=/jph/?(?<segment>.*), /$\{segment}
-
-
-
-    consul:
-      discovery:
-        health-check-url: http://host.docker.internal:${server.port}/actuator/health
-        service-name: gateway-server
-        instance-id: ${spring.application.name}-${random.value}
-        prefer-ip-address: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+      client:
+        provider:
+          iam-service:
+            issuer-uri: http://localhost:9000
+        registration:
+          front-bff-client:
+            provider: iam-service
+            client-id: front-bff-client
+            client-authentication-method: none
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:9095/login/oauth2/code/front-bff-client
+            scope:
+              - openid
+              - profile
 management:
   endpoints:
     web:

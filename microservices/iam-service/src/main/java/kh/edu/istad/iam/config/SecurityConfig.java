@@ -14,6 +14,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -48,7 +49,8 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    @Value("${spring.security.oauth2.authorizationserver.issuer}")
+    private  String issuer;
     private final JdbcTemplate jdbcTemplate;
 
     @Bean //(1)
@@ -86,11 +88,15 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/login", "/error", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .permitAll()
+                )
                 .oauth2Client(Customizer.withDefaults())
                 .formLogin(config -> {
                     config.loginPage("/login")
@@ -98,17 +104,6 @@ public class SecurityConfig {
                 });
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(userDetails);
     }
 
     @Bean
@@ -159,7 +154,7 @@ public class SecurityConfig {
     @Bean //(8)
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer(issuer)
                 .build();
     }
 

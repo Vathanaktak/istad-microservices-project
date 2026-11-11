@@ -1,0 +1,430 @@
+{
+	"info": {
+		"_postman_id": "b3c959d5-7864-4e20-bf4d-3d4ff282362b",
+		"name": "IAM Service - OAuth2",
+		"description": "Collection for testing IAM Service OAuth2 Authorization Server endpoints, including authorization code exchange, PKCE, client credentials, and token refresh.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Exchange Authorization Code (Basic Auth)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();",
+							"if (response.access_token) {",
+							"    pm.collectionVariables.set(\"access_token\", response.access_token);",
+							"    console.log(\"Saved access_token to collection variables\");",
+							"}",
+							"if (response.refresh_token) {",
+							"    pm.collectionVariables.set(\"refresh_token\", response.refresh_token);",
+							"    console.log(\"Saved refresh_token to collection variables\");",
+							"}",
+							"if (response.id_token) {",
+							"    pm.collectionVariables.set(\"id_token\", response.id_token);",
+							"    console.log(\"Saved id_token to collection variables\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{client_id}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{client_secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{auth_code}}",
+							"description": "The authorization code obtained after logging in",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "{{redirect_uri}}",
+							"description": "Must match the redirect_uri used during authorize",
+							"type": "text"
+						},
+						{
+							"key": "code_verifier",
+							"value": "{{code_verifier}}",
+							"description": "Required if PKCE code_challenge was used during authorization",
+							"type": "text",
+							"disabled": false
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/oauth2/token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"oauth2",
+						"token"
+					]
+				},
+				"description": "Exchange the authorization code for access_token, id_token, and refresh_token using HTTP Basic Authentication."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Exchange Authorization Code (Body Auth / PKCE)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();",
+							"if (response.access_token) {",
+							"    pm.collectionVariables.set(\"access_token\", response.access_token);",
+							"}",
+							"if (response.refresh_token) {",
+							"    pm.collectionVariables.set(\"refresh_token\", response.refresh_token);",
+							"}",
+							"if (response.id_token) {",
+							"    pm.collectionVariables.set(\"id_token\", response.id_token);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{auth_code}}",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "{{redirect_uri}}",
+							"type": "text"
+						},
+						{
+							"key": "code_verifier",
+							"value": "{{code_verifier}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/oauth2/token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"oauth2",
+						"token"
+					]
+				},
+				"description": "Alternative request putting client_id and client_secret directly into form body."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Client Credentials Grant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();",
+							"if (response.access_token) {",
+							"    pm.collectionVariables.set(\"access_token\", response.access_token);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{client_id}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{client_secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/oauth2/token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"oauth2",
+						"token"
+					]
+				},
+				"description": "Obtain an access token using Client Credentials grant."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Refresh Token Grant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();",
+							"if (response.access_token) {",
+							"    pm.collectionVariables.set(\"access_token\", response.access_token);",
+							"}",
+							"if (response.refresh_token) {",
+							"    pm.collectionVariables.set(\"refresh_token\", response.refresh_token);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{client_id}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{client_secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "refresh_token",
+							"type": "text"
+						},
+						{
+							"key": "refresh_token",
+							"value": "{{refresh_token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/oauth2/token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"oauth2",
+						"token"
+					]
+				},
+				"description": "Exchange refresh_token for a fresh access_token."
+			},
+			"response": []
+		},
+		{
+			"name": "5. OpenID Discovery Configuration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/.well-known/openid-configuration",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						".well-known",
+						"openid-configuration"
+					]
+				},
+				"description": "Retrieve OpenID Connect 1.0 discovery metadata."
+			},
+			"response": []
+		},
+		{
+			"name": "6. JSON Web Key Set (JWKS)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/oauth2/jwks",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"oauth2",
+						"jwks"
+					]
+				},
+				"description": "Retrieve public keys used to verify signed JWT tokens."
+			},
+			"response": []
+		},
+		{
+			"name": "7. UserInfo Endpoint",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/userinfo",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"userinfo"
+					]
+				},
+				"description": "Retrieve claims about the authenticated user using the access token."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:9000",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "oidc-client",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "secret",
+			"type": "string"
+		},
+		{
+			"key": "redirect_uri",
+			"value": "http://127.0.0.1:8080/login/oauth2/code/oidc-client",
+			"type": "string"
+		},
+		{
+			"key": "auth_code",
+			"value": "PASTE_YOUR_CODE_HERE",
+			"type": "string"
+		},
+		{
+			"key": "code_verifier",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "id_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
