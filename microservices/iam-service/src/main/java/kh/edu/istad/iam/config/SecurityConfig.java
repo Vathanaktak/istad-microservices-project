@@ -88,7 +88,8 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login", "/error", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/error", "/css/**", "/js/**", "/images/**","/index.html"
+                        ,"/favicon.svg","/icons.svg").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Form login handles the redirect to the login page from the
@@ -110,15 +111,6 @@ public class SecurityConfig {
     public RegisteredClientRepository registeredClientRepository() {
         return new JdbcRegisteredClientRepository(jdbcTemplate);
     }
-
-//    @Bean
-//    public RegisteredClientRepository registeredClientRepository(){
-//        return new JdbcRegisteredClientRepository(
-//                jdbcTemplate,registeredClientRepository()
-//        );
-//    }
-
-
 
     @Bean //(5)
     public JWKSource<SecurityContext> jwkSource() {
