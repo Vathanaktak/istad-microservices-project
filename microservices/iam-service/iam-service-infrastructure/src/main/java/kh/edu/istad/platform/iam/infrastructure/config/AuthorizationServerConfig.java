@@ -24,6 +24,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -33,6 +35,10 @@ public class AuthorizationServerConfig {
     @Bean @Order(1)
     SecurityFilterChain authorizationServerChain(HttpSecurity http, LoadUserForAuthenticationUseCase loadUser) throws Exception {
         OAuth2AuthorizationServerConfigurer asc = OAuth2AuthorizationServerConfigurer.authorizationServer();
+        // same cookie-based CSRF as the login chain: the React consent form posts to /oauth2/authorize with the XSRF-TOKEN value
+        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
+        csrfHandler.setCsrfRequestAttributeName(null);
+        http.csrf(c -> c.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).csrfTokenRequestHandler(csrfHandler));
         http.securityMatcher(asc.getEndpointsMatcher())
             .with(asc, as -> as
                 .authorizationEndpoint(e -> e.consentPage("/oauth2/consent"))

@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /** Web login chain: form login, social login (Google/GitHub/Facebook), Telegram widget. */
@@ -20,12 +23,25 @@ public class DefaultSecurityConfig {
     SecurityFilterChain defaultChain(HttpSecurity http, FederatedOAuth2UserService federated,
             FindOrProvisionFederatedUserUseCase provision, LinkIdentityUseCase link, LoadUserForAuthenticationUseCase load,
             @Value("${iam.telegram.bot-token:}") String botToken) throws Exception {
-        http.authorizeHttpRequests(a -> a
-                .requestMatchers("/login", "/login/telegram", "/register", "/css/**", "/js/**", "/images/**", "/error", "/favicon.ico").permitAll()
-                .anyRequest().authenticated())
+        // The React SPA is served from this origin. It owns the /login, /register and /oauth2/consent screens and posts
+        // plain HTML forms back to Spring, so CSRF is a double-submit cookie (XSRF-TOKEN) that the SPA copies into "_csrf".
+        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
+        csrfHandler.setCsrfRequestAttributeName(null);                      // load eagerly so the cookie is always issued
+        http.csrf(c -> c
+                .ignoringRequestMatchers("/logout")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(csrfHandler))
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/consent-info").authenticated()           // needs the IAM browser session
+                .anyRequest().permitAll())                                  // SPA shell + static assets; data is guarded by the API chain
             .formLogin(f -> f.loginPage("/login"))
             .oauth2Login(o -> o.loginPage("/login").userInfoEndpoint(u -> u.userService(federated)))
-            .logout(l -> l.logoutSuccessUrl("/login?logout"))
+            .logout(l -> l
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID", "XSRF-TOKEN"))
             .addFilterBefore(new TelegramLoginFilter(botToken, provision, link, load), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

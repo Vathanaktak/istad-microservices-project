@@ -1,18 +1,55 @@
 plugins {
     id 'iam-spring-common-conventions'
-    id 'gg.jte.gradle' version '3.2.1'
 }
 
-jte {
-    sourceDirectory = file("src/main/jte").toPath()
-    generate()
+/*
+ * iam-service-web is the React.js (Vite) frontend of the IAM platform.
+ *   frontend/            -> the React application (npm run dev for development)
+ *   src/main/java        -> thin Spring glue: serves the SPA, consent feed, public web config
+ * `./gradlew :iam-service-web:build` runs `npm ci && npm run build` and packages frontend/dist
+ * into the jar under /static, so iam-service-main serves UI + API from ONE origin (http://localhost:9000).
+ * Pass -PskipFrontend to build the Java module without Node.js.
+ */
+def frontendDir = layout.projectDirectory.dir('frontend')
+def skipFrontend = project.hasProperty('skipFrontend')
+def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+
+tasks.register('npmInstall', Exec) {
+    onlyIf { !skipFrontend }
+    workingDir = frontendDir.asFile
+    if (isWindows) {
+        commandLine 'cmd', '/c', 'npm', 'ci', '--no-audit', '--no-fund'
+    } else {
+        commandLine 'npm', 'ci', '--no-audit', '--no-fund'
+    }
+    inputs.files(frontendDir.file('package.json'), frontendDir.file('package-lock.json'))
+    outputs.dir(frontendDir.dir('node_modules'))
 }
+
+tasks.register('npmBuild', Exec) {
+    onlyIf { !skipFrontend }
+    dependsOn 'npmInstall'
+    workingDir = frontendDir.asFile
+    if (isWindows) {
+        commandLine 'cmd', '/c', 'npm', 'run', 'build'
+    } else {
+        commandLine 'npm', 'run', 'build'
+    }
+    inputs.dir(frontendDir.dir('src'))
+    inputs.dir(frontendDir.dir('public'))
+    inputs.files(frontendDir.file('index.html'), frontendDir.file('vite.config.js'), frontendDir.file('package.json'))
+    outputs.dir(frontendDir.dir('dist'))
+}
+
+processResources {
+    dependsOn 'npmBuild'
+    from(frontendDir.dir('dist')) { into 'static' }
+}
+
+tasks.named('clean') { delete frontendDir.dir('dist') }
 
 dependencies {
     api project(':iam-domain:iam-application-service')
     implementation libs.spring.boot.starter.web
-    implementation libs.spring.boot.starter.validation
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'gg.jte:jte:3.2.1'
-    implementation 'gg.jte:jte-spring-boot-starter-3:3.2.1'
 }
