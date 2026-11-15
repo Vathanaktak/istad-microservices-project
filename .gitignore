@@ -47,6 +47,11 @@ bin/
 ### Buf Generated Code ###
 gen/
 
-/microservices/iam-service/.env
+### Node / Dependencies ###
+node_modules/
 
-/microservices/iam-service/.env.example
+### Environment & Secrets ###
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
