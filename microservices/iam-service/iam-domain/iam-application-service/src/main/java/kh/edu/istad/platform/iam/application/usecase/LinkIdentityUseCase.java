@@ -8,6 +8,8 @@ import org.springframework.stereotype.*; import org.springframework.transaction.
 public class LinkIdentityUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
+    private final AuditLogRepository auditLogs;
+    private final CurrentActorProvider actor;
 
     public IdentityResult execute(UUID userUuid, FederatedIdentityCommand c) {
         User u = assembler.require(userUuid);
@@ -23,6 +25,24 @@ public class LinkIdentityUseCase {
         i.setEmail(c.email()); i.setEmailVerified(c.emailVerified()); i.setDisplayName(c.displayName());
         i.setUsername(c.username()); i.setPictureUrl(c.pictureUrl()); i.setAttributes(c.attributes());
         i.recordLogin();
-        return UserMapper.toIdentity(users.saveIdentity(i));
+        Identity saved = users.saveIdentity(i);
+
+        try {
+            AuditLog log = new AuditLog();
+            log.setUuid(UUID.randomUUID());
+            log.setUserId(u.getId());
+            log.setCategory("AUTH");
+            log.setAction("IDENTITY_LINKED");
+            log.setOutcome("SUCCESS");
+            log.setActor(u.getUsername());
+            log.setTarget(c.provider() != null ? c.provider().name() : "IDENTITY");
+            log.setIpAddress(actor.currentIpAddress());
+            log.setDetail("Linked " + c.provider() + " account" + (c.displayName() != null ? " (" + c.displayName() + ")" : ""));
+            log.setOccurredAt(Instant.now());
+            auditLogs.save(log);
+        } catch (Exception ignored) {
+        }
+
+        return UserMapper.toIdentity(saved);
     }
 }

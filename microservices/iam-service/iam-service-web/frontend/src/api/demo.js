@@ -119,6 +119,17 @@ const routes = [
   ['DELETE', `^/api/users/${ID}/sessions/${ID}$`, (m) => { sessionStore[m[1]] = sessionsFor(m[1]).filter((s) => s.id !== m[2]); return ok(null); }],
   ['GET', `^/api/users/${ID}/login-history$`, (m, { query }) =>
     ok(pageOf(mkLogins(15, false).filter((l) => !query.status || l.status === query.status), query))],
+  ['GET', `^/api/users/${ID}/deactivation-request$`, () => ok(deactivation?.status === 'PENDING' ? {
+    uuid: 'demo-deact-1', userUuid: 'me', username: 'demo_user', email: 'user@example.com', name: 'Demo User',
+    reason: deactivation.reason || 'not_using', details: deactivation.details || '', status: 'PENDING', requestedAt: deactivation.requestedAt
+  } : null)],
+  ['GET', '^/api/deactivation-requests/count-pending$', () => ok({ count: deactivation?.status === 'PENDING' ? 1 : 0 })],
+  ['GET', '^/api/deactivation-requests$', () => ok(pageOf(deactivation?.status === 'PENDING' ? [{
+    uuid: 'demo-deact-1', userUuid: 'me', username: 'demo_user', email: 'user@example.com', name: 'Demo User',
+    reason: deactivation.reason || 'not_using', details: deactivation.details || '', status: 'PENDING', requestedAt: deactivation.requestedAt
+  }] : []))],
+  ['POST', `^/api/deactivation-requests/${ID}/approve$`, () => { deactivation = { status: 'PROCESSED' }; return ok(deactivation); }],
+  ['POST', `^/api/deactivation-requests/${ID}/reject$`, () => { deactivation = { status: 'REJECTED' }; return ok(deactivation); }],
   // admin: monitoring -------------------------------------------------------------------------
   ['GET', '^/api/login-history$', (m, { query }) => ok(pageOf(allLogins.filter((l) =>
     (!query.status || l.status === query.status) && (query.suspicious !== 'true' || l.suspicious) &&

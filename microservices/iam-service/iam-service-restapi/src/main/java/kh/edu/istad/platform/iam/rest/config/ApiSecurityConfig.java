@@ -27,7 +27,9 @@ public class ApiSecurityConfig {
         http.securityMatcher("/api/**")
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(a -> a.requestMatchers("/api/auth/register").permitAll().anyRequest().authenticated())
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/api/auth/register", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
+                .anyRequest().authenticated())
             .oauth2ResourceServer(o -> o
                 .jwt(j -> j.jwtAuthenticationConverter(jwtConverter()))
                 .authenticationEntryPoint((req, res, e) -> Problems.write(res, om, HttpStatus.UNAUTHORIZED, "unauthorized", "Unauthorized", "A valid Bearer token is required"))

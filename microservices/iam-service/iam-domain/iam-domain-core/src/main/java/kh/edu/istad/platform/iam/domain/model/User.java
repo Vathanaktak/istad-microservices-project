@@ -36,6 +36,12 @@ public class User extends Auditable {
     private int failedLoginAttempts;
     private Instant lastLoginAt;
     private Instant passwordChangedAt;
+    /**
+     * Null, or the instant until which the account is auto-locked by failed-login throttling.
+     * When non-null and in the future the account must be treated as locked.
+     * Admin lock/unlock operates on {@code accountNonLocked} directly.
+     */
+    private Instant lockedUntil;
 
     // --- convenience accessors kept for backward compat with persistence layer ---
     public String getUsername()    { return username  == null ? null : username.value(); }
@@ -156,10 +162,11 @@ public class User extends Auditable {
      * Throws if the account is not currently locked.
      */
     public void unlockAccount() {
-        if (accountNonLocked) {
+        if (accountNonLocked && !isTemporarilyLocked()) {
             throw new BusinessRuleException("user-not-locked", "User account is not locked");
         }
         accountNonLocked = true;
+        lockedUntil = null;
         failedLoginAttempts = 0;
     }
 
@@ -195,11 +202,34 @@ public class User extends Auditable {
         softDelete(actor);
     }
 
-    public void recordLoginSuccess() { failedLoginAttempts = 0; lastLoginAt = Instant.now(); }
+    public void recordLoginSuccess() { failedLoginAttempts = 0; lockedUntil = null; lastLoginAt = Instant.now(); }
 
+    /**
+     * Records a failed attempt. When {@code maxAttempts} is reached the account is auto-locked
+     * for 15 minutes ({@code lockedUntil}). The admin lock flag ({@code accountNonLocked}) is
+     * NOT touched here — that is reserved for explicit admin actions.
+     */
     public void recordLoginFailure(int maxAttempts) {
         failedLoginAttempts++;
-        if (failedLoginAttempts >= maxAttempts) accountNonLocked = false;
+        if (failedLoginAttempts >= maxAttempts) {
+            lockedUntil = Instant.now().plus(java.time.Duration.ofMinutes(15));
+        }
+    }
+
+    /**
+     * Returns true when the account is currently under a timed auto-lock.
+     * Always false once {@code lockedUntil} has passed.
+     */
+    public boolean isTemporarilyLocked() {
+        return lockedUntil != null && Instant.now().isBefore(lockedUntil);
+    }
+
+    /**
+     * Returns true when the account is effectively locked, either by admin ({@code !accountNonLocked})
+     * or by a timed throttle ({@code isTemporarilyLocked()}).
+     */
+    public boolean isEffectivelyLocked() {
+        return !accountNonLocked || isTemporarilyLocked();
     }
 
     /** @deprecated use {@link #lockAccount()} for explicit admin locking */

@@ -22,6 +22,7 @@ public class DefaultSecurityConfig {
     @Bean @Order(3)
     SecurityFilterChain defaultChain(HttpSecurity http, FederatedOAuth2UserService federated,
             FindOrProvisionFederatedUserUseCase provision, LinkIdentityUseCase link, LoadUserForAuthenticationUseCase load,
+            RecordLoginAttemptUseCase recordAttempt,
             @Value("${iam.telegram.bot-token:}") String botToken) throws Exception {
         // The React SPA is served from this origin. It owns the /login, /register and /oauth2/consent screens and posts
         // plain HTML forms back to Spring, so CSRF is a double-submit cookie (XSRF-TOKEN) that the SPA copies into "_csrf".
@@ -42,7 +43,7 @@ public class DefaultSecurityConfig {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID", "XSRF-TOKEN"))
-            .addFilterBefore(new TelegramLoginFilter(botToken, provision, link, load), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new TelegramLoginFilter(botToken, provision, link, load, recordAttempt), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

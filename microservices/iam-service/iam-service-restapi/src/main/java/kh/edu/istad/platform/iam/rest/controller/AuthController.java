@@ -7,10 +7,24 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal; imp
 @RestController @RequestMapping("/api/auth") @RequiredArgsConstructor
 public class AuthController {
     private final RegisterUserUseCase register;
+    private final ForgotPasswordUseCase forgotPassword;
+    private final ResetPasswordUseCase resetPassword;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest r) {
         var result = register.execute(new RegisterUserCommand(r.username(), r.email(), r.password(), r.givenName(), r.familyName(), r.locale()));
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiMapper.user(result));
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest r) {
+        forgotPassword.execute(new ForgotPasswordCommand(r.email()));
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(@Valid @RequestBody ResetPasswordWithTokenRequest r) {
+        resetPassword.execute(new ResetPasswordWithTokenCommand(r.token(), r.newPassword()));
     }
 }

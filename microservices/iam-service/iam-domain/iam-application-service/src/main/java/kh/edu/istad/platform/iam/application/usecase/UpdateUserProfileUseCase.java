@@ -10,6 +10,8 @@ public class UpdateUserProfileUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
     private final IamDomainService iamDomainService;
+    private final AuditLogRepository auditLogs;
+    private final CurrentActorProvider actorProvider;
 
     public UserResult execute(UpdateUserProfileCommand c) {
         User u = assembler.require(c.userUuid());
@@ -36,6 +38,24 @@ public class UpdateUserProfileUseCase {
                 c.gender(), c.birthdate(), c.locale(),
                 c.profileUrl(), c.pictureUrl(), c.websiteUrl(), c.zoneinfo());
 
-        return assembler.result(users.save(u));
+        User saved = users.save(u);
+
+        try {
+            AuditLog log = new AuditLog();
+            log.setUuid(UUID.randomUUID());
+            log.setUserId(u.getId());
+            log.setCategory("USER");
+            log.setAction("PROFILE_UPDATED");
+            log.setOutcome("SUCCESS");
+            log.setActor(u.getUsername());
+            log.setTarget(u.getUsername());
+            log.setIpAddress(actorProvider.currentIpAddress());
+            log.setDetail("Profile details updated");
+            log.setOccurredAt(Instant.now());
+            auditLogs.save(log);
+        } catch (Exception ignored) {
+        }
+
+        return assembler.result(saved);
     }
 }

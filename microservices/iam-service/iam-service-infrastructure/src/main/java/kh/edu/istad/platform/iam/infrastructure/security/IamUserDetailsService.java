@@ -18,7 +18,8 @@ public class IamUserDetailsService implements UserDetailsService {
                 .password(a.hasPassword() ? a.passwordHash() : "{bcrypt}!")
                 .disabled(!a.user().enabled())
                 .accountExpired(!a.accountNonExpired())
-                .accountLocked(!a.user().accountNonLocked())
+                // locked = admin-locked OR still inside the timed auto-lock window
+                .accountLocked(!a.user().accountNonLocked() || a.temporarilyLocked())
                 .credentialsExpired(!a.credentialsNonExpired())
                 .authorities(AuthorityMapper.authorities(a))
                 .build();

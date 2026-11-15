@@ -34,7 +34,7 @@ public class FederatedOAuth2UserService implements OAuth2UserService<OAuth2UserR
             } else {
                 user = provision.execute(cmd);
             }
-            if (!user.user().enabled() || !user.user().accountNonLocked() || !user.accountNonExpired())
+            if (!user.user().enabled() || !user.user().accountNonLocked() || user.temporarilyLocked() || !user.accountNonExpired())
                 throw new OAuth2AuthenticationException(new OAuth2Error("account_unavailable", "Account is disabled or locked", null));
             return new DefaultOAuth2User(AuthorityMapper.authorities(user), Map.of("username", user.user().username()), "username");
         } catch (DomainException e) {

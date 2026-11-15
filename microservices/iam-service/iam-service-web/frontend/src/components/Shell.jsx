@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Activity, Building2, FlaskConical, History, KeyRound, LayoutDashboard, Link2, LockKeyhole, LogOut, Menu,
-  MonitorSmartphone, ScrollText, Settings2, ShieldCheck, ShieldHalf, UserRound, Users, X, Ban,
+  MonitorSmartphone, ScrollText, Settings2, ShieldCheck, ShieldHalf, UserRound, Users, UserX, X, Ban,
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n';
@@ -73,6 +73,7 @@ export default function Shell({ children }) {
     { title: t('nav.management'), items: [
       { to: '/admin', end: true, icon: LayoutDashboard, label: t('nav.overview'), any: ['user:read', 'role:read', 'permission:read'] },
       { to: '/admin/users', icon: Users, label: t('nav.users'), any: ['user:read'] },
+      { to: '/admin/deactivations', icon: UserX, label: t('nav.deactivations'), any: ['user:read'] },
       { to: '/admin/roles', icon: ShieldHalf, label: t('nav.roles'), any: ['role:read'] },
       { to: '/admin/permissions', icon: LockKeyhole, label: t('nav.permissions'), any: ['permission:read'] },
       { to: '/admin/clients', icon: Building2, label: t('nav.clients'), any: ['client:read'] },

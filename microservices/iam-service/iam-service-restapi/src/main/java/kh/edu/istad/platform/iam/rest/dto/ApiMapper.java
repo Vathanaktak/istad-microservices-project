@@ -45,4 +45,11 @@ public final class ApiMapper {
     public static PermissionAssignmentResponse permissionAssignment(PermissionAssignmentResult a) {
         return new PermissionAssignmentResponse(a.permissionUuid(), a.name(), a.assignedAt(), a.expiresAt());
     }
+    public static MonitoringDtos.DeactivationProposalResponse deactivationProposal(DeactivationProposalResult r) {
+        return new MonitoringDtos.DeactivationProposalResponse(
+            r.uuid(), r.userUuid(), r.username(), r.email(), r.name(),
+            r.reason(), r.details(), r.status(), r.requestedAt(), r.cancelledAt(),
+            r.processedAt(), r.reviewNotes(), r.reviewedBy()
+        );
+    }
 }

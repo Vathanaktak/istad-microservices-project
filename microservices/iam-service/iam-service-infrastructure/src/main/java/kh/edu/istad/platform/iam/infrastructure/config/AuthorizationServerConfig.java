@@ -70,21 +70,31 @@ public class AuthorizationServerConfig {
     @Bean JWKSource<SecurityContext> jwkSource(@Value("${iam.jwt.private-key:}") String privateKey,
                                                @Value("${iam.jwt.public-key:}") String publicKey) throws GeneralSecurityException {
         KeyPair pair;
-        String kid;
         if (!privateKey.isBlank() && !publicKey.isBlank()) {
             KeyFactory kf = KeyFactory.getInstance("RSA");
             pair = new KeyPair(
                 kf.generatePublic(new X509EncodedKeySpec(Base64.getMimeDecoder().decode(publicKey))),
                 kf.generatePrivate(new PKCS8EncodedKeySpec(Base64.getMimeDecoder().decode(privateKey))));
-            kid = "iam-key-1";
         } else {
             KeyPairGenerator g = KeyPairGenerator.getInstance("RSA");
             g.initialize(2048);
             pair = g.generateKeyPair();
-            kid = UUID.randomUUID().toString();
         }
+        // Derive a stable key ID from the SHA-256 thumbprint of the public key so that
+        // token validators can cache JWKS by kid even across restarts using a fixed key.
+        String kid = thumbprint((java.security.interfaces.RSAPublicKey) pair.getPublic());
         RSAKey rsa = new RSAKey.Builder((RSAPublicKey) pair.getPublic()).privateKey((RSAPrivateKey) pair.getPrivate()).keyID(kid).build();
         return new ImmutableJWKSet<>(new JWKSet(rsa));
+    }
+
+    /** SHA-256 thumbprint of the DER-encoded SubjectPublicKeyInfo, hex-encoded (first 16 chars). */
+    private static String thumbprint(java.security.interfaces.RSAPublicKey pub) throws GeneralSecurityException {
+        byte[] der = pub.getEncoded();                                      // X.509 SubjectPublicKeyInfo
+        java.security.MessageDigest sha = java.security.MessageDigest.getInstance("SHA-256");
+        byte[] digest = sha.digest(der);
+        StringBuilder sb = new StringBuilder(64);
+        for (byte b : digest) sb.append(String.format("%02x", b));
+        return sb.substring(0, 32);                                         // 128-bit prefix is sufficient for a kid
     }
 
     @Bean JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {

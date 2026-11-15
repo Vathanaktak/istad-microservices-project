@@ -4,7 +4,7 @@ import { AuditTable } from './AuditLogs';
 import { useData } from '../../components/hooks';
 import { useI18n } from '../../i18n';
 import { useAuth } from '../../auth/AuthContext';
-import { clients, monitoring, permissions, roles, users } from '../../api/iam';
+import { clients, deactivationRequests, monitoring, permissions, roles, users } from '../../api/iam';
 
 const total = (p) => p?.page?.totalElements ?? 0;
 const settle = (promise) => promise.then((value) => ({ value }), (error) => ({ error }));
@@ -13,7 +13,7 @@ export default function Overview() {
   const { t, num } = useI18n();
   const { can } = useAuth();
   const state = useData(async () => {
-    const [allUsers, activeUsers, lockedProbe, allRoles, allPerms, allClients, recent] = await Promise.all([
+    const [allUsers, activeUsers, lockedProbe, allRoles, allPerms, allClients, recent, pendingDeact] = await Promise.all([
       can('user:read') ? settle(users.list({ size: 1 })) : { error: true },
       can('user:read') ? settle(users.list({ size: 1, enabled: true })) : { error: true },
       can('user:read') ? settle(users.list({ size: 100, enabled: true })) : { error: true },
@@ -21,8 +21,9 @@ export default function Overview() {
       can('permission:read') ? settle(permissions.list({ size: 1 })) : { error: true },
       can('client:read') ? settle(clients.list({ size: 1 })) : { error: true },
       can('audit:read') ? settle(monitoring.auditLogs({ size: 8, sort: 'occurredAt,desc' })) : { error: true },
+      can('user:read') ? settle(deactivationRequests.countPending()) : { error: true },
     ]);
-    return { allUsers, activeUsers, lockedProbe, allRoles, allPerms, allClients, recent };
+    return { allUsers, activeUsers, lockedProbe, allRoles, allPerms, allClients, recent, pendingDeact };
   }, []);
 
   return (
@@ -32,8 +33,10 @@ export default function Overview() {
         {(d) => {
           const val = (r, fmt = total) => (r.error ? '—' : num(fmt(r.value)));
           const locked = d.lockedProbe.error ? '—' : num(d.lockedProbe.value.content.filter((u) => u.locked).length);
+          const pendingDeact = d.pendingDeact?.error ? '—' : num(d.pendingDeact?.value?.count ?? 0);
           const stats = [
             { label: t('overview.users'), value: val(d.allUsers), to: '/admin/users', sub: t('overview.activeOf', { n: val(d.activeUsers) }) },
+            { label: t('deactivation.proposals'), value: pendingDeact, to: '/admin/deactivations', sub: t('deactivation.pending') },
             { label: t('overview.locked'), value: locked, to: '/admin/users', sub: t('overview.lockedHint') },
             { label: t('overview.roles'), value: val(d.allRoles), to: '/admin/roles' },
             { label: t('overview.permissions'), value: val(d.allPerms), to: '/admin/permissions' },

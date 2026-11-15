@@ -10,6 +10,8 @@ public class ChangePasswordUseCase {
     private final UserRepository users;
     private final PasswordHasher hasher;
     private final IamDomainService iamDomainService;
+    private final AuditLogRepository auditLogs;
+    private final CurrentActorProvider actorProvider;
 
     public void execute(ChangePasswordCommand c) {
         User u = assembler.require(c.userUuid());
@@ -21,5 +23,21 @@ public class ChangePasswordUseCase {
         iamDomainService.changeUserPassword(u, hasher.hash(c.newPassword()));
 
         users.save(u);
+
+        try {
+            AuditLog log = new AuditLog();
+            log.setUuid(UUID.randomUUID());
+            log.setUserId(u.getId());
+            log.setCategory("AUTH");
+            log.setAction("PASSWORD_CHANGED");
+            log.setOutcome("SUCCESS");
+            log.setActor(u.getUsername());
+            log.setTarget(u.getUsername());
+            log.setIpAddress(actorProvider.currentIpAddress());
+            log.setDetail("Password changed successfully");
+            log.setOccurredAt(Instant.now());
+            auditLogs.save(log);
+        } catch (Exception ignored) {
+        }
     }
 }

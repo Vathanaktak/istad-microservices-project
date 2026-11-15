@@ -9,7 +9,17 @@ export const useAuth = () => useContext(AuthContext);
 
 const TOKENS = 'iam.tokens';
 const FLOW = 'iam.flow';
-const readTokens = () => { try { return JSON.parse(sessionStorage.getItem(TOKENS)); } catch { return null; } };
+// Only the access_token and its expiry are persisted to sessionStorage.
+// The refresh_token is kept in memory only (memTokens) so it is never written to storage.
+// A page reload requires re-login via the existing browser session cookie — this is intentional.
+let memRefreshToken = null;
+const readTokens = () => {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(TOKENS));
+    // Restore in-memory refresh token from previous session's memory (not from storage)
+    return stored ? { ...stored, refresh_token: memRefreshToken } : null;
+  } catch { return null; }
+};
 const readCookie = (name) => document.cookie.split('; ').find((c) => c.startsWith(`${name}=`))?.split('=')[1];
 
 async function tokenRequest(params) {
@@ -32,7 +42,16 @@ export function AuthProvider({ children }) {
   const store = useCallback((t) => {
     tokensRef.current = t;
     setTokens(t);
-    if (t) sessionStorage.setItem(TOKENS, JSON.stringify(t)); else sessionStorage.removeItem(TOKENS);
+    if (t) {
+      // Store only access_token and expiry; keep refresh_token in memory only.
+      memRefreshToken = t.refresh_token ?? memRefreshToken;
+      const toStore = { ...t };
+      delete toStore.refresh_token;
+      sessionStorage.setItem(TOKENS, JSON.stringify(toStore));
+    } else {
+      memRefreshToken = null;
+      sessionStorage.removeItem(TOKENS);
+    }
   }, []);
 
   /** Starts Authorization Code + PKCE. The IAM server shows our /login page (it owns the session cookie). */
@@ -61,9 +80,11 @@ export function AuthProvider({ children }) {
 
   const refresh = useCallback(async () => {
     const current = tokensRef.current;
-    if (!current?.refresh_token) throw new Error('no_refresh_token');
-    refreshing.current ||= tokenRequest({ grant_type: 'refresh_token', refresh_token: current.refresh_token })
-      .then((t) => { const merged = { refresh_token: current.refresh_token, ...t }; store(merged); return merged; })
+    // refresh_token lives in memory only (memRefreshToken) but is merged into tokensRef via store()
+    const rt = current?.refresh_token ?? memRefreshToken;
+    if (!rt) throw new Error('no_refresh_token');
+    refreshing.current ||= tokenRequest({ grant_type: 'refresh_token', refresh_token: rt })
+      .then((t) => { const merged = { refresh_token: rt, ...t }; store(merged); return merged; })
       .finally(() => { refreshing.current = null; });
     return refreshing.current;
   }, [store]);

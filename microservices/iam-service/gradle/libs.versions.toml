@@ -1,0 +1,124 @@
+[versions]
+
+java-version = "25"
+spring-boot-gradle-plugin = "4.1.1"
+dependency-managnment-plugin = "1.1.7"
+swagger-plugin = "3.2.0"
+junit-bom = "6.0.0"
+grpc = "1.68.1"
+protobuf = "3.25.5"
+protobufPlugin = "0.9.4"
+grpcSpringBootStarter = "3.1.0.RELEASE"
+
+[libraries]
+
+spring-boot-gradle-plugin = {module='org.springframework.boot:spring-boot-gradle-plugin',version.ref="spring-boot-gradle-plugin"}
+dependency-managnment-plugin = {module = 'io.spring.gradle:dependency-management-plugin',version.ref="dependency-managnment-plugin"}
+spring-boot-stater-data-r2dbc = {module = "org.springframework.boot:spring-boot-starter-data-r2dbc"}
+spring-boot-starter-data-r2dbc = {module = "org.springframework.boot:spring-boot-starter-data-r2dbc"}
+spring-boot-starter-web = {module = "org.springframework.boot:spring-boot-starter-web"}
+spring-boot-starter-webmvc = {module = "org.springframework.boot:spring-boot-starter-webmvc"}
+spring-boot-starter-webclient = {module = "org.springframework.boot:spring-boot-starter-webclient"}
+spring-boot-starter-webflux = {module = "org.springframework.boot:spring-boot-starter-webflux"}
+spring-boot-starter-actuator = {module = "org.springframework.boot:spring-boot-starter-actuator"}
+spring-boot-starter-liquibase = {module = "org.springframework.boot:spring-boot-starter-liquibase"}
+spring-boot-starter-test = {module = "org.springframework.boot:spring-boot-starter-test"}
+spring-boot-starter-test-webmvc = {module = "org.springframework.boot:spring-boot-starter-webmvc-test"}
+spring-boot-starter-data-mongodb-reactive = {module = "org.springframework.boot:spring-boot-starter-data-mongodb-reactive"}
+spring-boot-starter-data-jpa = {module = "org.springframework.boot:spring-boot-starter-data-jpa"}
+spring-boot-starter-validation = {module = "org.springframework.boot:spring-boot-starter-validation"}
+lombok = {module = "org.projectlombok:lombok"}
+
+springdoc-openapi-stater-webmvc-ui = {module = "org.springdoc:springdoc-openapi-starter-webmvc-ui",version.ref="swagger-plugin"}
+
+# gRPC & Protobuf
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
+grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+grpc-server-spring-boot-starter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
+grpc-client-spring-boot-starter = { module = "net.devh:grpc-client-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
+
+# Spring Cloud
+spring-cloud-starter-consul-discovery = {module = "org.springframework.cloud:spring-cloud-starter-consul-discovery"}
+spring-cloud-starter-consul-config = {module = "org.springframework.cloud:spring-cloud-starter-consul-config"}
+spring-cloud-starter-loadbalancer = {module = "org.springframework.cloud:spring-cloud-starter-loadbalancer"}
+
+# Reactive & Testing
+reactor-core = {module = "io.projectreactor:reactor-core"}
+reactor-test = {module = "io.projectreactor:reactor-test"}
+junit-bom = {module = "org.junit:junit-bom", version.ref = "junit-bom"}
+junit-jupiter = {module = "org.junit.jupiter:junit-jupiter"}
+junit-platform-launcher = {module = "org.junit.platform:junit-platform-launcher"}
+
+# Database & Migration
+liquibase-core = {module = "org.liquibase:liquibase-core"}
+postgresql = {module = "org.postgresql:postgresql"}
+r2dbc-postgresql = {module = "org.postgresql:r2dbc-postgresql"}
+
+# ISTAD Common & Business
+istad-common-swagger = {module = "kh.edu.istad:istad-common-swagger"}
+istad-common-domain = {module = "kh.edu.istad:istad-common-domain"}
+istad-common-webflux = {module = "kh.edu.istad:istad-common-webflux"}
+istad-common-grpc = {module = "kh.edu.istad:istad-common-grpc"}
+business-domain-core = {module = "kh.edu.istad:business-domain-core"}
+
+# Order Service Modules (existing aliases kept for backwards compatibility)
+order-application-service = {module = "kh.edu.istad:order-domain-core"}
+order-domain-core = {module = "kh.edu.istad:istad-common-domain"}
+
+# Order Service Internal Modules
+order-client = {module = "kh.edu.istad:order-service-client"}
+order-message = {module = "kh.edu.istad:order-service-message"}
+order-persistence = {module = "kh.edu.istad:order-service-persistence"}
+order-restapi = {module = "kh.edu.istad:order-service-restapi"}
+order-app-service = {module = "kh.edu.istad:order-application-service"}
+order-core = {module = "kh.edu.istad:order-domain-core"}
+
+# Customer Service Modules
+customer-core = {module = "kh.edu.istad:customer-domain-core"}
+customer-app-service = {module = "kh.edu.istad:customer-application-service"}
+customer-message = {module = "kh.edu.istad:customer-service-message"}
+customer-persistence = {module = "kh.edu.istad:customer-service-persistence"}
+customer-restapi = {module = "kh.edu.istad:customer-service-restapi"}
+
+# Business Service Modules
+business-core = {module = "kh.edu.istad:business-domain-core"}
+business-app-service = {module = "kh.edu.istad:business-application-service"}
+business-message = {module = "kh.edu.istad:business-service-message"}
+business-persistence = {module = "kh.edu.istad:business-service-persistence"}
+business-restapi = {module = "kh.edu.istad:business-service-restapi"}
+
+# Payment Service Modules
+payment-core = {module = "kh.edu.istad:payment-domain-core"}
+payment-app-service = {module = "kh.edu.istad:payment-application-service"}
+payment-message = {module = "kh.edu.istad:payment-service-message"}
+payment-persistence = {module = "kh.edu.istad:payment-service-persistence"}
+payment-restapi = {module = "kh.edu.istad:payment-service-restapi"}
+
+# IAM Service Modules
+iam-core = {module = "kh.edu.istad:iam-domain-core"}
+iam-app-service = {module = "kh.edu.istad:iam-application-service"}
+iam-persistence = {module = "kh.edu.istad:iam-service-persistence"}
+iam-infrastructure = {module = "kh.edu.istad:iam-service-infrastructure"}
+iam-restapi = {module = "kh.edu.istad:iam-service-restapi"}
+iam-web = {module = "kh.edu.istad:iam-service-web"}
+
+[bundles]
+
+gradle-dependency-managnment = [
+    "spring-boot-gradle-plugin",
+    "dependency-managnment-plugin"
+]
+grpc-common = [
+    "grpc-protobuf",
+    "grpc-stub"
+]
+
+[plugins]
+
+java-plugin-conventions = { id = "java-common-conventions"}
+spring-plugin-conventions = {id = "sping-common-conventions"}
+spring-boot-plugin-conventions = {id = "spring-boot-commont-conventions"}
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

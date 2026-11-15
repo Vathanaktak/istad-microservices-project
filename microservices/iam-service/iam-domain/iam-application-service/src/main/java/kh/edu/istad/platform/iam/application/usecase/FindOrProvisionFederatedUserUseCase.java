@@ -1,11 +1,13 @@
 package kh.edu.istad.platform.iam.application.usecase;
 import kh.edu.istad.platform.iam.application.command.*; import kh.edu.istad.platform.iam.application.result.*; import kh.edu.istad.platform.iam.application.query.*; import kh.edu.istad.platform.iam.application.port.out.*; import kh.edu.istad.platform.iam.application.support.*;
 import kh.edu.istad.platform.iam.domain.model.*; import kh.edu.istad.platform.iam.domain.exception.*; import kh.edu.istad.platform.iam.domain.service.*;
-import java.time.*; import java.util.*; import java.util.stream.*;
+import java.security.SecureRandom; import java.time.*; import java.util.*; import java.util.stream.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.*; import org.springframework.transaction.annotation.Transactional;
 @Service @RequiredArgsConstructor @Transactional
 public class FindOrProvisionFederatedUserUseCase {
+    private static final int MAX_USERNAME_ATTEMPTS = 20;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private final UserRepository users;
     private final UserCreator creator;
     private final UserAssembler assembler;
@@ -17,6 +19,8 @@ public class FindOrProvisionFederatedUserUseCase {
             refresh(i, c);
             users.saveIdentity(i);
             User u = users.findById(i.getUserId()).orElseThrow(() -> NotFoundException.of("User", i.getUserId()));
+            u.recordLoginSuccess();
+            users.save(u);
             return assembler.authUser(u);
         }
         User user = null;
@@ -30,6 +34,8 @@ public class FindOrProvisionFederatedUserUseCase {
         i.setProviderSubject(c.providerSubject());
         refresh(i, c);
         users.saveIdentity(i);
+        user.recordLoginSuccess();
+        users.save(user);
         return assembler.authUser(user);
     }
 
@@ -54,7 +60,14 @@ public class FindOrProvisionFederatedUserUseCase {
         if (base.length() < 3) base = c.provider().name().toLowerCase(Locale.ROOT) + base;
         if (base.length() > 40) base = base.substring(0, 40);
         String candidate = base;
-        while (users.existsByUsername(candidate)) candidate = base + (1000 + new Random().nextInt(9000));
+        int attempts = 0;
+        while (users.existsByUsername(candidate)) {
+            if (++attempts > MAX_USERNAME_ATTEMPTS) {
+                throw new ConflictException("federated-username-conflict",
+                    "Could not generate a unique username after " + MAX_USERNAME_ATTEMPTS + " attempts");
+            }
+            candidate = base + (1000 + SECURE_RANDOM.nextInt(9000));
+        }
         return candidate;
     }
 

@@ -2,7 +2,7 @@
 
 OAuth 2.1 / OpenID Connect 1.0 provider where **User, Role and Permission are the core domain** and Spring
 Authorization Server is just an adapter. Includes Dynamic Client Registration, social login (Google, GitHub,
-Facebook, Telegram), a JWT‑secured REST API (RFC 9457 errors) and JTE pages in English and Khmer.
+Facebook, Telegram), a JWT-secured REST API (RFC 9457 errors) and a React/Vite single-page application.
 
 ## Modules & dependency rules
 
@@ -11,16 +11,16 @@ iam-service/
 ├── iam-domain/
 │   ├── iam-domain-core/          plain Java: User, Role, Permission, Identity, assignments, AuthorityCalculator
 │   └── iam-application-service/  one class per use case, commands/results, output ports  (→ domain-core)
-├── iam-persistence/              JPA entities, Spring Data repos, MapStruct, port adapters   (→ application-service)
-├── iam-infrastructure/           Authorization Server, JDBC stores, claims, token customizer, DCR, social login (→ application-service)
-├── iam-rest-api/                 controllers, DTOs, validation, JWT API security, Problem Details (→ application-service)
-├── iam-web/                      JTE pages, web controllers, i18n                              (→ application-service)
-└── iam-main/                     Spring Boot app, wiring, config, Liquibase master, tests       (→ all)
+├── iam-service-persistence/      JPA entities, Spring Data repos, MapStruct, port adapters   (→ application-service)
+├── iam-service-infrastructure/   Authorization Server, JDBC stores, claims, token customizer, DCR, social login (→ application-service)
+├── iam-service-restapi/          controllers, DTOs, validation, JWT API security, Problem Details (→ application-service)
+├── iam-service-web/              React/Vite SPA frontend + web controllers                 (→ application-service)
+└── iam-service-main/             Spring Boot app, wiring, config, Liquibase master, tests       (→ all)
 ```
 * `iam-domain-core` / `iam-application-service` contain **no** JPA, web or Spring Authorization Server code
   (the application layer only uses `@Service`/`@Transactional`).
 * Output ports: `UserRepository`, `RoleRepository`, `PermissionRepository` (persistence), `PasswordHasher`,
-  `CurrentActorProvider` (infrastructure) and `ClientConsentPort` (infrastructure; lets `iam-web` show consent / connected apps
+  `CurrentActorProvider` (infrastructure) and `ClientConsentPort` (infrastructure; lets `iam-service-web` show consent / connected apps
   without depending on Spring Authorization Server).
 * Controllers only map DTO ⇄ command/result and call exactly one use case.
 
@@ -29,17 +29,21 @@ iam-service/
 ```bash
 cp .env.example .env && set -a && source .env && set +a
 docker compose up -d                      # PostgreSQL
-mvn -q -DskipTests install
-java -jar iam-main/target/iam-main-1.0.0.jar     # http://localhost:9000
+./gradlew build -PskipFrontend -x test
+java -jar iam-service-main/build/libs/iam-service-main-1.0.0.jar     # http://localhost:9000
 ```
 Required env: `DB_PASSWORD`, `IAM_DCR_CLIENT_SECRET`. With `IAM_ADMIN_*` set, an administrator (role `ADMIN`) is created at
-startup. No secret is stored in the repository; defaults in `application.yml` only exist for non-secret values.
+startup.
 Without `IAM_JWT_PRIVATE_KEY/PUBLIC_KEY` an ephemeral RSA key is generated (tokens stop validating after a restart).
 
-Generate a stable key pair:
+Generate a stable key pair (derived from the same private key):
 ```bash
-openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -outform DER | base64 -w0   # IAM_JWT_PRIVATE_KEY
-openssl rsa -in <(openssl genrsa 2048) -pubout -outform DER | base64 -w0         # must be the matching public key
+openssl genrsa -out rsa_key.pem 2048
+# Base64 PKCS#8 private key:
+openssl pkcs8 -topk8 -inform PEM -outform DER -in rsa_key.pem -nocrypt | base64 -w0
+# Matching Base64 X.509 public key:
+openssl rsa -in rsa_key.pem -pubout -outform DER | base64 -w0
+rm rsa_key.pem
 ```
 
 ## Design notes
@@ -55,13 +59,12 @@ openssl rsa -in <(openssl genrsa 2048) -pubout -outform DER | base64 -w0        
   (`openid profile email phone address`). The REST API validates our own JWTs and maps those claims to authorities, then guards
   every endpoint with `@PreAuthorize("hasAuthority('user:read')")` etc.
 * **Social login**: Google/GitHub/Facebook through Spring OAuth2 client; Telegram through the Login Widget (HMAC verified).
-  All go through `FindOrProvisionFederatedUserUseCase`. E‑mail auto‑linking only happens when the provider verified the e‑mail.
+  All go through `FindOrProvisionFederatedUserUseCase`. E-mail auto-linking only happens when the provider verified the e-mail.
   When a user is already signed in, the same flow calls `LinkIdentityUseCase` instead (profile → linked accounts).
   Register callbacks `http://localhost:9000/login/oauth2/code/{google|github|facebook}`; Telegram requires a public domain
   registered with @BotFather (`/setdomain`).
 * **Dynamic Client Registration**: `POST /connect/register` with an initial access token obtained by the seeded
   `iam-dcr-initial` client (`client_credentials`, scope `client.create`). Response contains `registration_access_token`.
-* **i18n**: `messages.properties` (en) and `messages_km.properties` (km); `?lang=en|km` (cookie). No text in templates.
 * **Seed data** (Liquibase): permissions `user|role|permission : create|read|update|delete|assign`, roles `ADMIN` (all) and `USER`
   (read on user/role/permission — adjust in `002-seed-roles-permissions.sql` if users should not list others).
 
@@ -73,6 +76,6 @@ Errors are `application/problem+json`, e.g. validation → `https://iam.istad.co
 ## Tests
 
 ```bash
-mvn test                 # domain + use-case unit tests
-mvn verify               # + IamApplicationIT (Testcontainers/PostgreSQL, needs Docker)
+./gradlew test                 # domain + use-case unit tests
+./gradlew check                # + IamApplicationIT (Testcontainers/PostgreSQL, needs Docker)
 ```

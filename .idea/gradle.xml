@@ -69,6 +69,11 @@
                   <project path="$PROJECT_DIR$/microservices/iam-service/iam-service-web" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservices/iam-service/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservices/iam-service/build-logic" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/microservices/order-services" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservices/order-services" />
@@ -132,6 +137,7 @@
             <option value="$PROJECT_DIR$/microservices/customer-services/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservices/gateway-server" />
             <option value="$PROJECT_DIR$/microservices/iam-service" />
+            <option value="$PROJECT_DIR$/microservices/iam-service/build-logic" />
             <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain" />
             <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-application-service" />
             <option value="$PROJECT_DIR$/microservices/iam-service/iam-domain/iam-domain-core" />

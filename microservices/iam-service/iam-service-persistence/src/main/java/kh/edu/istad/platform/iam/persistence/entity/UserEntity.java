@@ -33,4 +33,6 @@ public class UserEntity extends BaseEntity {
     private int failedLoginAttempts;
     private Instant lastLoginAt;
     private Instant passwordChangedAt;
+    /** Null, or the instant until which the account is auto-locked by failed-login throttling. */
+    private Instant lockedUntil;
 }

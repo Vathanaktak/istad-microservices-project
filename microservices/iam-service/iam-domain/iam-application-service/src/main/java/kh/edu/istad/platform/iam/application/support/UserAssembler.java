@@ -27,6 +27,6 @@ public class UserAssembler {
     public AuthUserResult authUser(User u) {
         Resolved r = resolve(u);
         return new AuthUserResult(UserMapper.toResult(u, r.roles()), u.getPasswordHash(), u.isAccountNonExpired(),
-            u.isCredentialsNonExpired(), r.authorities().roles(), r.authorities().permissions());
+            u.isCredentialsNonExpired(), u.isTemporarilyLocked(), r.authorities().roles(), r.authorities().permissions());
     }
 }

@@ -22,10 +22,6 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-  messages:
-    basename: messages
-    encoding: UTF-8
-    fallback-to-system-locale: false
   security:
     oauth2:
       client:
@@ -44,11 +40,6 @@ spring:
             client-secret: ${FACEBOOK_CLIENT_SECRET:disabled}
             scope: public_profile,email
 
-gg:
-  jte:
-    development-mode: false
-    use-precompiled-templates: true
-
 iam:
   issuer: ${IAM_ISSUER:http://localhost:9000}
   jwt:
@@ -56,11 +47,11 @@ iam:
     public-key: ${IAM_JWT_PUBLIC_KEY:}       # X.509 base64
   dcr:
     client-id: ${IAM_DCR_CLIENT_ID:iam-dcr-initial}
-    client-secret: ${IAM_DCR_CLIENT_SECRET:change-me-too}
+    client-secret: ${IAM_DCR_CLIENT_SECRET}  # required; no default — set via env
   telegram:
     bot-token: ${TELEGRAM_BOT_TOKEN:}
     bot-username: ${TELEGRAM_BOT_USERNAME:}
   admin:
-    username: ${IAM_ADMIN_USERNAME:admin}
-    email: ${IAM_ADMIN_EMAIL:admin@istad.co}
-    password: ${IAM_ADMIN_PASSWORD:Adm1n!Pass2026}
+    username: ${IAM_ADMIN_USERNAME:}         # admin is only created when all three are set
+    email: ${IAM_ADMIN_EMAIL:}
+    password: ${IAM_ADMIN_PASSWORD:}         # required; no default

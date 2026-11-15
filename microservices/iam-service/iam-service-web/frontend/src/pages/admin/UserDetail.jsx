@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, LockOpen, Lock, LogOut, Power, PowerOff, Repeat, Trash2, Unlink } from 'lucide-react';
+import { ArrowLeft, Check, LockOpen, Lock, LogOut, Power, PowerOff, Repeat, Trash2, TriangleAlert, Unlink, X } from 'lucide-react';
 import { Avatar } from '../../components/Shell';
 import {
   Async, Badge, Button, Chips, DataTable, EmptyState, KeyValue, Modal, PageHeader, Pagination, Panel, SelectField, Tabs, TextField,
@@ -11,7 +11,7 @@ import { LoginTable, SessionList } from '../../components/shared';
 import { useData } from '../../components/hooks';
 import { describeError, useI18n } from '../../i18n';
 import { useAuth } from '../../auth/AuthContext';
-import { permissions as permsApi, roles as rolesApi, users } from '../../api/iam';
+import { deactivationRequests, permissions as permsApi, roles as rolesApi, users } from '../../api/iam';
 import { PASSWORD_HINT, PHONE_RE, validatePassword } from '../../components/validation';
 
 const dateInput = (v) => (v ? new Date(v).toISOString().slice(0, 16) : '');
@@ -319,9 +319,41 @@ export default function UserDetail() {
   const user = useData(() => users.get(id), [id]);
   const summary = useData(() => users.list({ q: user.data?.username, size: 50 }).then((p) => p.content.find((u) => u.uuid === id) || null), [user.data?.username]);
   const authz = useData(() => users.authorities(id), [id]);
+  const deactReq = useData(() => users.deactivationRequest(id), [id]);
   const locked = summary.data?.locked ?? false;
   const full = useMemo(() => (user.data ? { ...user.data, locked } : null), [user.data, locked]);
-  const reloadAll = () => { user.reload(); summary.reload(); };
+  const reloadAll = () => { user.reload(); summary.reload(); deactReq.reload(); };
+
+  const approveDeact = async (req) => {
+    if (!(await confirm({
+      title: t('deactivation.approveConfirmTitle', { name: full.name || full.username }),
+      message: t('deactivation.approveConfirmBody'),
+      confirmLabel: t('deactivation.approve'),
+      danger: true,
+    }))) return;
+    try {
+      await deactivationRequests.approve(req.uuid);
+      toast.success(t('deactivation.approved'));
+      reloadAll();
+    } catch (e) {
+      toast.error(describeError(e, t));
+    }
+  };
+
+  const rejectDeact = async (req) => {
+    if (!(await confirm({
+      title: t('deactivation.rejectConfirmTitle', { name: full.name || full.username }),
+      message: t('deactivation.rejectConfirmBody'),
+      confirmLabel: t('deactivation.reject'),
+    }))) return;
+    try {
+      await deactivationRequests.reject(req.uuid);
+      toast.success(t('deactivation.rejected'));
+      reloadAll();
+    } catch (e) {
+      toast.error(describeError(e, t));
+    }
+  };
 
   const remove = async () => {
     if (!(await confirm({ title: t('users.deleteTitle', { name: full.username }), message: t('users.deleteBody'), confirmLabel: t('common.delete'), danger: true }))) return;
@@ -344,6 +376,30 @@ export default function UserDetail() {
               {can('user:update') && <Button icon={full.enabled ? PowerOff : Power} onClick={toggleEnabled}>{full.enabled ? t('users.deactivate') : t('users.activate')}</Button>}
               {can('user:delete') && <Button variant="danger" icon={Trash2} onClick={remove}>{t('common.delete')}</Button>}
             </>} />
+          {deactReq.data && (
+            <Panel tone="warn" title={t('deactivation.adminTitle')}>
+              <div className="stack">
+                <div className="callout">
+                  <TriangleAlert size={18} />
+                  <p>{t('deactivation.banner', { reason: t(`deactivation.reason.${deactReq.data.reason}`, deactReq.data.reason) })}</p>
+                </div>
+                {deactReq.data.details && (
+                  <p className="muted"><strong>{t('deactivation.details')}:</strong> {deactReq.data.details}</p>
+                )}
+                <small className="muted">{t('deactivation.requestedOn')}: {date(deactReq.data.requestedAt)}</small>
+                {can('user:update') && (
+                  <div className="row-actions">
+                    <Button variant="danger" icon={Check} onClick={() => approveDeact(deactReq.data)}>
+                      {t('deactivation.approve')}
+                    </Button>
+                    <Button icon={X} onClick={() => rejectDeact(deactReq.data)}>
+                      {t('deactivation.reject')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Panel>
+          )}
           <Tabs value={tab} onChange={setTab} tabs={[
             { key: 'profile', label: t('users.tab.profile') }, { key: 'roles', label: t('users.tab.roles') }, { key: 'permissions', label: t('users.tab.permissions') },
             { key: 'sessions', label: t('users.tab.sessions') }, { key: 'history', label: t('users.tab.history') }, { key: 'security', label: t('users.tab.security') },

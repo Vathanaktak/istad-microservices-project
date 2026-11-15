@@ -4,6 +4,6 @@ import kh.edu.istad.platform.iam.domain.model.*; import kh.edu.istad.platform.ia
 import java.time.*; import java.util.*;
 /** What the authentication layer needs: profile claims, credentials state and effective authorities. */
 public record AuthUserResult(UserResult user, String passwordHash, boolean accountNonExpired, boolean credentialsNonExpired,
-        Set<String> roles, Set<String> permissions) {
+        boolean temporarilyLocked, Set<String> roles, Set<String> permissions) {
     public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
 }

@@ -66,6 +66,16 @@ public final class UserDtos {
         public boolean isConfirmPasswordValid() { return newPassword != null && newPassword.equals(confirmPassword); }
     }
 
+    public record ForgotPasswordRequest(@NotBlank @Email String email) {}
+
+    public record ResetPasswordWithTokenRequest(
+        @NotBlank String token,
+        @NotBlank @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_MSG) String newPassword,
+        @NotBlank String confirmPassword) {
+        @JsonIgnore @AssertTrue(message = "passwords do not match")
+        public boolean isConfirmPasswordValid() { return newPassword != null && newPassword.equals(confirmPassword); }
+    }
+
     public record AssignRolesToUserRequest(@NotEmpty List<@NotNull UUID> roleUuids, @Future Instant expiresAt, @Size(max = 255) String reason) {}
     public record GrantPermissionsToUserRequest(@NotEmpty List<@NotNull UUID> permissionUuids, Effect effect,
                                                 @Future Instant expiresAt, @Size(max = 255) String reason) {}

@@ -5,3 +5,11 @@ databaseChangeLog:
       file: db/changelog/002-seed-roles-permissions.sql
   - include:
       file: db/changelog/003-oauth2-schema.sql
+  - include:
+      file: db/changelog/004-password-reset.sql
+  - include:
+      file: db/changelog/005-locked-until.sql
+  - include:
+      file: db/changelog/006-history-audit-config.sql
+  - include:
+      file: db/changelog/007-deactivation-review.sql

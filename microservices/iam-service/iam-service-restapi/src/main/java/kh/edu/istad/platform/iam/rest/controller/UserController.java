@@ -23,6 +23,11 @@ public class UserController {
     private final RevokePermissionFromUserUseCase revokePermission;
     private final ListUserIdentitiesUseCase identities;
     private final UnlinkIdentityUseCase unlinkIdentity;
+    private final GetUserSessionsUseCase getSessions;
+    private final TerminateSessionUseCase terminateSession;
+    private final TerminateAllSessionsUseCase terminateAllSessions;
+    private final GetLoginHistoryUseCase getLoginHistory;
+    private final GetDeactivationRequestForUserUseCase getDeactivationRequest;
 
     @PostMapping @PreAuthorize("hasAuthority('user:create')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest r) {
@@ -89,4 +94,50 @@ public class UserController {
     public List<IdentityResponse> identities(@PathVariable UUID uuid) { return identities.execute(uuid).stream().map(ApiMapper::identity).toList(); }
     @DeleteMapping("/{uuid}/identities/{identityUuid}") @ResponseStatus(HttpStatus.NO_CONTENT) @PreAuthorize("hasAuthority('user:update')")
     public void unlink(@PathVariable UUID uuid, @PathVariable UUID identityUuid) { unlinkIdentity.execute(uuid, identityUuid); }
+
+    // --- Admin User Sessions ---
+    @GetMapping("/{uuid}/sessions") @PreAuthorize("hasAuthority('user:read')")
+    public List<MonitoringDtos.SessionResponse> sessions(@PathVariable UUID uuid) {
+        String username = get.execute(uuid).username();
+        return getSessions.execute(username, null).stream()
+            .map(s -> new MonitoringDtos.SessionResponse(s.id(), s.device(), s.current(), s.browser(), s.os(), s.ipAddress(), s.location(), s.lastActiveAt(), s.createdAt()))
+            .toList();
+    }
+
+    @DeleteMapping("/{uuid}/sessions/{sessionId}") @ResponseStatus(HttpStatus.NO_CONTENT) @PreAuthorize("hasAuthority('user:update')")
+    public void terminateSession(@PathVariable UUID uuid, @PathVariable String sessionId) {
+        String username = get.execute(uuid).username();
+        terminateSession.execute(username, sessionId);
+    }
+
+    @DeleteMapping("/{uuid}/sessions") @ResponseStatus(HttpStatus.NO_CONTENT) @PreAuthorize("hasAuthority('user:update')")
+    public void terminateAllSessions(@PathVariable UUID uuid) {
+        String username = get.execute(uuid).username();
+        terminateAllSessions.execute(username);
+    }
+
+    // --- Admin User Login History ---
+    @GetMapping("/{uuid}/login-history") @PreAuthorize("hasAuthority('user:read')")
+    public PageResponse<MonitoringDtos.LoginRecordResponse> loginHistory(
+            @PathVariable UUID uuid,
+            @RequestParam(defaultValue = "") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "occurredAt,desc") String sort) {
+        String username = get.execute(uuid).username();
+        var result = getLoginHistory.executeForUser(username, status, page, size, sort);
+        var mapped = result.map(r -> new MonitoringDtos.LoginRecordResponse(
+            r.getId(), r.getUsername(), r.getStatus(), r.getIpAddress(), r.getLocation(),
+            r.getUserAgent(), r.getDevice(), r.getBrowser(), r.getOs(), r.isSuspicious(), r.getFailureReason(), r.getOccurredAt()));
+        return PageResponse.of(mapped);
+    }
+
+    @GetMapping("/{uuid}/deactivation-request")
+    @PreAuthorize("hasAuthority('user:read')")
+    public ResponseEntity<MonitoringDtos.DeactivationProposalResponse> deactivationRequest(@PathVariable UUID uuid) {
+        return getDeactivationRequest.execute(uuid)
+                .map(ApiMapper::deactivationProposal)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
 }

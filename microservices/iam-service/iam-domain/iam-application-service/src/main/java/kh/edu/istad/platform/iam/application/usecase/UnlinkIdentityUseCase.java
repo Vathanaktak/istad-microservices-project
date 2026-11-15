@@ -9,6 +9,7 @@ public class UnlinkIdentityUseCase {
     private final UserAssembler assembler;
     private final UserRepository users;
     private final CurrentActorProvider actor;
+    private final AuditLogRepository auditLogs;
 
     public void execute(UUID userUuid, UUID identityUuid) {
         User u = assembler.require(userUuid);
@@ -19,5 +20,21 @@ public class UnlinkIdentityUseCase {
         if (methods <= 1) throw new BusinessRuleException("last-sign-in-method", "Cannot unlink the last sign-in method");
         target.softDelete(actor.currentActor());
         users.saveIdentity(target);
+
+        try {
+            AuditLog log = new AuditLog();
+            log.setUuid(UUID.randomUUID());
+            log.setUserId(u.getId());
+            log.setCategory("AUTH");
+            log.setAction("IDENTITY_UNLINKED");
+            log.setOutcome("SUCCESS");
+            log.setActor(u.getUsername());
+            log.setTarget(target.getProvider() != null ? target.getProvider().name() : "IDENTITY");
+            log.setIpAddress(actor.currentIpAddress());
+            log.setDetail("Unlinked " + target.getProvider() + " account");
+            log.setOccurredAt(Instant.now());
+            auditLogs.save(log);
+        } catch (Exception ignored) {
+        }
     }
 }

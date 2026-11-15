@@ -22,6 +22,7 @@ import Deactivation from './pages/account/Deactivation';
 import Overview from './pages/admin/Overview';
 import Users from './pages/admin/Users';
 import UserDetail from './pages/admin/UserDetail';
+import Deactivations from './pages/admin/Deactivations';
 import Roles from './pages/admin/Roles';
 import Permissions from './pages/admin/Permissions';
 import Clients from './pages/admin/Clients';
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="/admin" element={<Can any={['user:read', 'role:read', 'permission:read']}><Overview /></Can>} />
         <Route path="/admin/users" element={<Can any={['user:read']}><Users /></Can>} />
         <Route path="/admin/users/:id" element={<Can any={['user:read']}><UserDetail /></Can>} />
+        <Route path="/admin/deactivations" element={<Can any={['user:read']}><Deactivations /></Can>} />
         <Route path="/admin/roles" element={<Can any={['role:read']}><Roles /></Can>} />
         <Route path="/admin/permissions" element={<Can any={['permission:read']}><Permissions /></Can>} />
         <Route path="/admin/clients" element={<Can any={['client:read']}><Clients /></Can>} />

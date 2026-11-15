@@ -28,7 +28,7 @@ public class ClientSeeder implements ApplicationRunner {
     private final RegisteredClientRepository clients;
     private final PasswordEncoder encoder;
     @Value("${iam.dcr.client-id:iam-dcr-initial}") private String clientId;
-    @Value("${iam.dcr.client-secret:change-me-too}") private String clientSecret;
+    @Value("${iam.dcr.client-secret}") private String clientSecret;
     @Value("${iam.web.client-id:iam-web}") private String webClientId;
     @Value("${iam.web.redirect-uris:http://localhost:9000/auth/callback,http://localhost:5173/auth/callback}") private String webRedirectUris;
 

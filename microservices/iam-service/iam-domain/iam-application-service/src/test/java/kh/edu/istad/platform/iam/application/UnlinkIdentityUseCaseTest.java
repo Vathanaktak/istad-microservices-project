@@ -15,7 +15,8 @@ class UnlinkIdentityUseCaseTest {
     private final UserRepository users = mock(UserRepository.class);
     private final UserAssembler assembler = new UserAssembler(users, mock(RoleRepository.class));
     private final CurrentActorProvider actor = () -> "tester";
-    private final UnlinkIdentityUseCase useCase = new UnlinkIdentityUseCase(assembler, users, actor);
+    private final AuditLogRepository auditLogs = mock(AuditLogRepository.class);
+    private final UnlinkIdentityUseCase useCase = new UnlinkIdentityUseCase(assembler, users, actor, auditLogs);
 
     private User user(boolean password) {
         User u = new User(); u.setId(1L);

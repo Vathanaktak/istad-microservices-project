@@ -25,12 +25,14 @@ public class TelegramLoginFilter extends OncePerRequestFilter {
     private final FindOrProvisionFederatedUserUseCase provision;
     private final LinkIdentityUseCase link;
     private final LoadUserForAuthenticationUseCase load;
+    private final RecordLoginAttemptUseCase recordAttempt;
     private final HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
     private final SavedRequestAwareAuthenticationSuccessHandler success = new SavedRequestAwareAuthenticationSuccessHandler();
 
     public TelegramLoginFilter(String botToken, FindOrProvisionFederatedUserUseCase provision, LinkIdentityUseCase link,
-                               LoadUserForAuthenticationUseCase load) {
+                               LoadUserForAuthenticationUseCase load, RecordLoginAttemptUseCase recordAttempt) {
         this.botToken = botToken; this.provision = provision; this.link = link; this.load = load;
+        this.recordAttempt = recordAttempt;
     }
 
     @Override
@@ -49,10 +51,19 @@ public class TelegramLoginFilter extends OncePerRequestFilter {
             Authentication current = SecurityContextHolder.getContext().getAuthentication();
             AuthUserResult user;
             if (current != null && current.isAuthenticated() && !(current instanceof AnonymousAuthenticationToken)) {
+                // Step 3.4 hardening: require recent authentication within 5 minutes before linking external accounts
+                HttpSession session = req.getSession(false);
+                long maxAgeMs = 5 * 60 * 1000L; // 5 minutes
+                if (session == null || (System.currentTimeMillis() - session.getCreationTime()) > maxAgeMs) {
+                    res.sendRedirect("/account/linked-accounts?error=recent_auth_required");
+                    return;
+                }
                 link.execute(load.execute(current.getName()).user().uuid(), cmd);
                 user = load.execute(current.getName());
-            } else user = provision.execute(cmd);
-            if (!user.user().enabled() || !user.user().accountNonLocked()) { res.sendRedirect("/login?error"); return; }
+            } else {
+                user = provision.execute(cmd);    // recordLoginSuccess is called inside provision
+            }
+            if (!user.user().enabled() || !user.user().accountNonLocked() || user.temporarilyLocked()) { res.sendRedirect("/login?error"); return; }
 
             var principal = org.springframework.security.core.userdetails.User.builder()
                 .username(user.user().username()).password("{bcrypt}!").authorities(AuthorityMapper.authorities(user)).build();

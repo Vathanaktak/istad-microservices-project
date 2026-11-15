@@ -5,4 +5,8 @@ import java.time.*; import java.util.*;
 public interface CurrentActorProvider {
     /** Subject (user uuid / client id) of the caller, or "system" when there is none. */
     String currentActor();
+
+    default String currentIpAddress() {
+        return "127.0.0.1";
+    }
 }

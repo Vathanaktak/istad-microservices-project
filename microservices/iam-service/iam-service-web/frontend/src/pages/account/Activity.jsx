@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity as ActivityIcon, KeyRound, Link2, LogIn, MailCheck, MonitorOff, UserPen, Image, Unlink } from 'lucide-react';
+import { Activity as ActivityIcon, KeyRound, Link2, LogIn, MailCheck, MonitorOff, UserPen, Image, Unlink, UserX, UserCheck } from 'lucide-react';
 import { Async, EmptyState, PageHeader, Pagination, Panel } from '../../components/ui';
 import { useData } from '../../components/hooks';
 import { useI18n } from '../../i18n';
@@ -8,6 +8,7 @@ import { me } from '../../api/iam';
 const ICON = {
   PASSWORD_CHANGED: KeyRound, PROFILE_UPDATED: UserPen, IDENTITY_LINKED: Link2, IDENTITY_UNLINKED: Unlink,
   SESSION_TERMINATED: MonitorOff, EMAIL_VERIFIED: MailCheck, LOGIN_SUCCESS: LogIn, PROFILE_PICTURE_UPDATED: Image,
+  DEACTIVATION_REQUESTED: UserX, DEACTIVATION_CANCELLED: UserCheck, DEACTIVATION_APPROVED: UserX, DEACTIVATION_REJECTED: UserCheck,
 };
 
 export default function Activity() {

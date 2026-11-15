@@ -44,6 +44,7 @@ export const users = {
   terminateSession: (id, sid) => del(`/api/users/${id}/sessions/${sid}`),
   terminateAllSessions: (id) => del(`/api/users/${id}/sessions`),
   loginHistory: (id, query) => get(`/api/users/${id}/login-history`, { query }),
+  deactivationRequest: (id) => get(`/api/users/${id}/deactivation-request`),
 };
 
 export const roles = {
@@ -81,4 +82,11 @@ export const monitoring = {
 export const system = {
   getConfig: () => get('/api/system/config'),
   saveConfig: (body) => put('/api/system/config', body),
+};
+
+export const deactivationRequests = {
+  list: (query) => get('/api/deactivation-requests', { query }),
+  countPending: () => get('/api/deactivation-requests/count-pending'),
+  approve: (id, body) => post(`/api/deactivation-requests/${id}/approve`, body),
+  reject: (id, body) => post(`/api/deactivation-requests/${id}/reject`, body),
 };
