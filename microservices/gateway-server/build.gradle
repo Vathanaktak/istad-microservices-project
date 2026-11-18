@@ -18,5 +18,4 @@ dependencies {
     implementation libs.spring.cloud.starter.consul.config
     implementation libs.spring.cloud.starter.consul.discovery
 
-
 }
