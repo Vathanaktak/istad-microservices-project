@@ -1,4 +1,5 @@
 .gradle
+./note
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -42,8 +43,15 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-# Environment variables
-.env
-*.env
-.env.*
-!.env.example
+
+### Buf Generated Code ###
+gen/
+
+### Node / Dependencies ###
+node_modules/
+
+### Environment & Secrets ###
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
